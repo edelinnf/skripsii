@@ -20,14 +20,6 @@ st.title("Analisis Klasterisasi Pelanggan Properti (X-Means)")
 # Tambahkan di bagian atas setelah import
 st.sidebar.title("⚙️ Pengaturan Aplikasi")
 
-# Tambahkan info atau input di sidebar
-uploaded_angsuran = st.sidebar.file_uploader("Upload angsuran.xlsx", type="xlsx")
-uploaded_utama = st.sidebar.file_uploader("Upload data utama.xlsx", type="xlsx")
-
-# Tambahkan pilihan parameter t-SNE ke sidebar
-perplexity = st.sidebar.slider("Perplexity (t-SNE)", 5, 50, 30)
-max_iter = st.sidebar.slider("Max Iterasi (t-SNE)", 250, 1000, 300)
-
 # Upload file
 uploaded_angsuran = st.file_uploader("Upload file angsuran.xlsx", type="xlsx")
 uploaded_utama = st.file_uploader("Upload file data utama.xlsx", type="xlsx")
@@ -106,6 +98,10 @@ if uploaded_angsuran and uploaded_utama:
     cluster_means = dataset.groupby('Klaster')[['Jumlah Transaksi', 'Jumlah Terlambat', 'Selisih', 'Status Pembayaran']].mean()
     st.dataframe(cluster_means)
 
+    # Tambahkan pilihan parameter t-SNE ke sidebar
+    perplexity = st.sidebar.slider("Perplexity (t-SNE)", 5, 50, 30)
+    max_iter = st.sidebar.slider("Max Iterasi (t-SNE)", 250, 1000, 300)
+    
     # Visualisasi t-SNE
     st.subheader("Visualisasi t-SNE 2D")
     tsne_2d = TSNE(n_components=2, perplexity=perplexity, max_iter=max_iter, random_state=42)
