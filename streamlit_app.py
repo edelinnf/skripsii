@@ -15,7 +15,7 @@ import io
 
 warnings.filterwarnings('ignore')
 
-st.title("Analisis Klasterisasi Pelanggan Properti (X-Means)")
+st.title("Analisis Klasterisasi Pelanggan Properti")
 
 # Tambahkan di bagian atas setelah import
 st.sidebar.title("⚙️ Pengaturan Aplikasi")
