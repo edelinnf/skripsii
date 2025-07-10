@@ -13,7 +13,6 @@ import plotly.express as px
 import warnings
 
 warnings.filterwarnings('ignore')
-st.set_option('deprecation.showPyplotGlobalUse', False)
 
 st.title("Analisis Klasterisasi Pelanggan Properti (X-Means)")
 
