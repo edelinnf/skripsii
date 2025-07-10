@@ -15,6 +15,10 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # ---------------- Sidebar ---------------- #
+# Sidebar - Header Branding
+st.sidebar.markdown("## 🧠 Propalyze")
+st.sidebar.markdown("**Platform Analisis & Klasterisasi Pelanggan Properti**")
+st.sidebar.markdown("---")  # Garis pemisah
 st.sidebar.title("Menu")
 
 fitur = st.sidebar.radio("Pilih Halaman", ["📘 Penjelasan", "📊 Analisis & Klasterisasi"])
