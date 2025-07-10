@@ -11,6 +11,7 @@ from sklearn.manifold import TSNE
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 import plotly.express as px
 import warnings
+import io
 
 warnings.filterwarnings('ignore')
 
@@ -121,6 +122,24 @@ if uploaded_angsuran and uploaded_utama:
     st.subheader("Dataset Final dengan Label Klaster")
     st.dataframe(dataset[['Nomor Unit', 'Jumlah Transaksi', 'Total Pembayaran', 'Harga',
                           'Selisih', 'Status Pembayaran', 'Jumlah Terlambat', 'Klaster']])
+
+    st.subheader("📥 Unduh Hasil Klasterisasi")
+
+    # Konversi ke Excel dan buat buffer
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        dataset.to_excel(writer, index=False, sheet_name='Hasil Klaster')
+        writer.save()
+        processed_data = output.getvalue()
+
+    # Tombol download
+    st.download_button(
+        label="📁 Download Hasil sebagai Excel",
+        data=processed_data,
+        file_name='hasil_klaster.xlsx',
+        mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+
 
 else:
     st.info("Silakan unggah kedua file Excel terlebih dahulu.")
