@@ -46,8 +46,8 @@ elif fitur == "📊 Analisis & Klasterisasi":
     st.title("📊 Analisis & Klasterisasi Pelanggan Properti")
 
     # Upload file
-     uploaded_angsuran = st.file_uploader("📤 Upload file angsuran.xlsx", type="xlsx", key="angsuran")
-     uploaded_utama = st.file_uploader("📤 Upload file data utama.xlsx", type="xlsx", key="data_utama")
+    uploaded_angsuran = st.file_uploader("📤 Upload file angsuran.xlsx", type="xlsx", key="angsuran")
+    uploaded_utama = st.file_uploader("📤 Upload file data utama.xlsx", type="xlsx", key="data_utama")
 
     if uploaded_angsuran and uploaded_utama:
         df1 = pd.read_excel(uploaded_angsuran)
