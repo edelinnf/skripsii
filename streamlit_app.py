@@ -96,7 +96,7 @@ if uploaded_angsuran and uploaded_utama:
 
     # Visualisasi t-SNE
     st.subheader("Visualisasi t-SNE 2D")
-    tsne_2d = TSNE(n_components=2, perplexity=30, n_iter=300, random_state=42)
+    tsne_2d = TSNE(n_components=2, perplexity=30, max_iter=300, random_state=42)
     tsne_result = tsne_2d.fit_transform(fitur_np)
     dataset['TSNE-1'], dataset['TSNE-2'] = tsne_result[:, 0], tsne_result[:, 1]
 
@@ -107,7 +107,7 @@ if uploaded_angsuran and uploaded_utama:
 
     # Visualisasi 3D Interaktif
     st.subheader("Visualisasi t-SNE 3D Interaktif")
-    tsne_3d = TSNE(n_components=3, perplexity=30, n_iter=300, random_state=42)
+    tsne_3d = TSNE(n_components=3, perplexity=30, max_iter=300, random_state=42)
     tsne_3d_result = tsne_3d.fit_transform(fitur_np)
     tsne_3d_df = pd.DataFrame(tsne_3d_result, columns=['TSNE1_3D', 'TSNE2_3D', 'TSNE3_3D'])
     tsne_3d_df['Klaster'] = dataset['Klaster']
