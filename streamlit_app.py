@@ -14,6 +14,8 @@ import io
 import warnings
 warnings.filterwarnings('ignore')
 
+st.title("Analisis Klasterisasi Pelanggan Properti")
+
 # ---------------- Sidebar ---------------- #
 st.sidebar.title("🧭 Navigasi")
 
