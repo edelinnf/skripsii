@@ -14,16 +14,14 @@ import io
 import warnings
 warnings.filterwarnings('ignore')
 
-st.title("Analisis Klasterisasi Pelanggan Properti")
-
 # ---------------- Sidebar ---------------- #
-st.sidebar.title("🧭 Navigasi")
+st.sidebar.title("Menu")
 
-fitur = st.sidebar.radio("Pilih Halaman", ["📘 Tentang Aplikasi", "📊 Analisis & Klasterisasi"])
+fitur = st.sidebar.radio("Pilih Halaman", ["📘 Penjelasan", "📊 Analisis & Klasterisasi"])
 
 # ---------------- Fitur 1: Tentang Aplikasi ---------------- #
-if fitur == "📘 Tentang Aplikasi":
-    st.title("📘 Tentang Aplikasi")
+if fitur == "📘 Penjelasan":
+    st.title("Analisis Klasterisasi Pelanggan Properti")
     st.markdown("""
     Aplikasi ini dibuat menggunakan **Streamlit** untuk melakukan *klasterisasi pelanggan properti* 
     menggunakan algoritma **X-Means**.
@@ -45,7 +43,7 @@ if fitur == "📘 Tentang Aplikasi":
 
 # ---------------- Fitur 2: Analisis & Klasterisasi ---------------- #
 elif fitur == "📊 Analisis & Klasterisasi":
-    st.title("📊 Analisis & Klasterisasi Pelanggan")
+    st.title("📊 Analisis & Klasterisasi Pelanggan Properti")
 
     # Upload file dari sidebar
     uploaded_angsuran = st.sidebar.file_uploader("Upload file angsuran.xlsx", type="xlsx")
