@@ -45,12 +45,9 @@ if fitur == "📘 Penjelasan":
 elif fitur == "📊 Analisis & Klasterisasi":
     st.title("📊 Analisis & Klasterisasi Pelanggan Properti")
 
-    # Upload file dari sidebar
-    uploaded_angsuran = st.sidebar.file_uploader("Upload file angsuran.xlsx", type="xlsx")
-    uploaded_utama = st.sidebar.file_uploader("Upload file data utama.xlsx", type="xlsx")
-
-    perplexity = st.sidebar.slider("Perplexity t-SNE", 5, 50, 30)
-    max_iter = st.sidebar.slider("Max Iterasi t-SNE", 250, 1000, 300)
+    # Upload file
+    uploaded_angsuran = st.file_uploader("Upload file angsuran.xlsx", type="xlsx")
+    uploaded_utama = st.file_uploader("Upload file data utama.xlsx", type="xlsx")
 
     if uploaded_angsuran and uploaded_utama:
         df1 = pd.read_excel(uploaded_angsuran)
@@ -110,6 +107,9 @@ elif fitur == "📊 Analisis & Klasterisasi":
         st.write(f"**Davies-Bouldin Index**: {davies_bouldin_score(fitur_np, dataset['Klaster']):.3f}")
         st.write(f"**Calinski-Harabasz Score**: {calinski_harabasz_score(fitur_np, dataset['Klaster']):.3f}")
 
+        perplexity = st.sidebar.slider("Perplexity t-SNE", 5, 50, 30)
+        max_iter = st.sidebar.slider("Max Iterasi t-SNE", 250, 1000, 300)
+        
         # t-SNE Visualisasi
         st.subheader("🧬 Visualisasi t-SNE 2D")
         tsne_2d = TSNE(n_components=2, perplexity=perplexity, max_iter=max_iter, random_state=42)
