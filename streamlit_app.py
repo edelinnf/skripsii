@@ -11,8 +11,6 @@ from sklearn.manifold import TSNE
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 import plotly.express as px
 import io
-import warnings
-warnings.filterwarnings('ignore')
 
 # ----------------- Custom CSS Styling ----------------- #
 st.markdown("""
