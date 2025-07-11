@@ -49,12 +49,59 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ----------------- Sidebar Layout ----------------- #
-st.sidebar.markdown('<div class="sidebar-title">📊 Propalyze</div>', unsafe_allow_html=True)
-st.sidebar.markdown("### Menu")
-fitur = st.sidebar.radio("",
-    ["📘 Penjelasan", "🗃️ Data", "📊 Analisis & Klasterisasi"]
+# ----------------- Sidebar: Branding dan Navigasi ----------------- #
+st.sidebar.title("Menu")
+st.sidebar.markdown("## 🧠 Propalyze")
+
+# CSS untuk style menu kotak
+st.sidebar.markdown(
+    """
+    <style>
+    .sidebar-box {
+        background-color: #a3d8f4;
+        padding: 10px 16px;
+        margin-bottom: 10px;
+        border-radius: 12px;
+        color: #002b5c;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: left;
+        border: 2px solid transparent;
+    }
+    .sidebar-box:hover {
+        background-color: #74c0fc;
+        border: 2px solid #1c7ed6;
+    }
+    .active {
+        background-color: #1c7ed6 !important;
+        color: white !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
 )
+
+# Inisialisasi halaman aktif
+if "page" not in st.session_state:
+    st.session_state.page = "Penjelasan"
+
+# Tombol menu sidebar
+def render_button(label, icon):
+    active = "active" if st.session_state.page == label else ""
+    st.sidebar.markdown(
+        f'<div class="sidebar-box {active}" onclick="window.location.href=\'/?page={label}\'">{icon} {label}</div>',
+        unsafe_allow_html=True
+    )
+
+# Menu tombol (ganti sesuai halaman)
+render_button("Penjelasan", "📘")
+render_button("Data", "💾")
+render_button("Analisis & Klasterisasi", "📊")
+
+# Tangani halaman via query param
+query_params = st.experimental_get_query_params()
+if "page" in query_params:
+    st.session_state.page = query_params["page"][0]
 
 # ----------------- Header ----------------- #
 st.markdown("<h1 style='text-align: center;'>Property Analysis</h1>", unsafe_allow_html=True)
