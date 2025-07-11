@@ -78,6 +78,13 @@ st.sidebar.markdown(
 )
 
 # ----------------- Sidebar: Branding dan Navigasi ----------------- #
+# Tombol menu sidebar
+def render_button(label, icon):
+    active = "active" if st.session_state.page == label else ""
+    st.sidebar.markdown(
+        f'<div class="sidebar-box {active}" onclick="window.location.href=\'/?page={label}\'">{icon} {label}</div>',
+        unsafe_allow_html=True
+    )
 with st.sidebar:
     st.markdown("# 🧠 Propalyze")
     st.markdown("### Menu")
@@ -94,14 +101,6 @@ with st.sidebar:
 # Inisialisasi halaman aktif
 if "page" not in st.session_state:
     st.session_state.page = "Penjelasan"
-
-# Tombol menu sidebar
-def render_button(label, icon):
-    active = "active" if st.session_state.page == label else ""
-    st.sidebar.markdown(
-        f'<div class="sidebar-box {active}" onclick="window.location.href=\'/?page={label}\'">{icon} {label}</div>',
-        unsafe_allow_html=True
-    )
 
 # Tangani halaman via query param
 query_params = st.query_params
