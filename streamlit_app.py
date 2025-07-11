@@ -81,28 +81,20 @@ st.sidebar.markdown(
 if "halaman" not in st.session_state:
     st.session_state.halaman = "Penjelasan"
 
-# Tangani halaman via query param
-query_params = st.query_params
-if "halaman" in query_params:
-    st.session_state.halaman = query_params["halaman"][0]
-
 # ----------------- Sidebar: Branding dan Navigasi ----------------- #
 with st.sidebar:
     st.markdown("# 🧠 Propalyze")
     st.markdown("### Menu")
 
-    selected = st.session_state.get("halaman", "Penjelasan")
-
-    def menu_item(label, icon):
-        active = "active" if st.session_state.get("halaman") == label else ""
-        if st.markdown(
-            f"""
-            <div class="sidebar-box {active}" onclick="window.location.href='?halaman={label}'">
-                {icon} {label}
-            </div>
-            """, unsafe_allow_html=True
-        ):
-            st.session_state.halaman = label
+    # Membuat tombol navigasi yang benar-benar berfungsi
+    if st.button("📘 Penjelasan", key="btn_penjelasan", use_container_width=True):
+        st.session_state.halaman = "Penjelasan"
+    
+    if st.button("📁 Data", key="btn_data", use_container_width=True):
+        st.session_state.halaman = "Data"
+    
+    if st.button("📊 Analisis & Klasterisasi", key="btn_analisis", use_container_width=True):
+        st.session_state.halaman = "Analisis & Klasterisasi"
 
 # ----------------- Header ----------------- #
 st.markdown("<h1 style='text-align: center;'>Property Analysis</h1>", unsafe_allow_html=True)
@@ -138,106 +130,189 @@ elif st.session_state.halaman == "Data":
 
     if uploaded_angsuran and uploaded_master:
         st.success("✅ Kedua file berhasil diunggah. Silakan lanjut ke menu 'Analisis & Klasterisasi'.")
+        
+        # Simpan file yang diupload ke session state
+        st.session_state.uploaded_angsuran = uploaded_angsuran
+        st.session_state.uploaded_master = uploaded_master
+        
+        # Preview data
+        try:
+            df1 = pd.read_excel(uploaded_angsuran)
+            df2 = pd.read_excel(uploaded_master)
+            
+            st.subheader("📊 Preview Data Angsuran")
+            st.dataframe(df1.head())
+            
+            st.subheader("📊 Preview Data Master")
+            st.dataframe(df2.head())
+            
+        except Exception as e:
+            st.error(f"Error membaca file: {str(e)}")
 
 # ----------------- Fitur 3: Analisis & Klasterisasi ----------------- #
-elif st.session_state.halaman == "Analisis":
+elif st.session_state.halaman == "Analisis & Klasterisasi":
+    st.title("📊 Analisis & Klasterisasi")
     st.write("Analisis dan visualisasi klaster pelanggan.")
 
-    uploaded_angsuran = st.file_uploader("Upload file angsuran.xlsx", type="xlsx", key="angsuran2")
-    uploaded_master = st.file_uploader("Upload file data utama.xlsx", type="xlsx", key="data_master2")
+    # Cek apakah file sudah diupload sebelumnya
+    if 'uploaded_angsuran' in st.session_state and 'uploaded_master' in st.session_state:
+        uploaded_angsuran = st.session_state.uploaded_angsuran
+        uploaded_master = st.session_state.uploaded_master
+        st.success("✅ Data sudah tersedia dari halaman sebelumnya.")
+    else:
+        st.warning("⚠️ Data belum diupload. Silakan upload file terlebih dahulu.")
+        uploaded_angsuran = st.file_uploader("Upload file angsuran.xlsx", type="xlsx", key="angsuran2")
+        uploaded_master = st.file_uploader("Upload file data utama.xlsx", type="xlsx", key="data_master2")
 
     if uploaded_angsuran and uploaded_master:
-        df1 = pd.read_excel(uploaded_angsuran)
-        df2 = pd.read_excel(uploaded_master)
-        df3 = pd.read_excel(uploaded_angsuran)
+        try:
+            # Membaca data
+            df1 = pd.read_excel(uploaded_angsuran)
+            df2 = pd.read_excel(uploaded_master)
+            df3 = pd.read_excel(uploaded_angsuran)
 
-        # Preprocessing
-        df1 = df1[['Nomor Unit', 'Nominal']].dropna()
-        df2 = df2[['F', 'Unnamed: 3']].dropna()
-        df3 = df3[['Nomor Unit', 'Tanggal Diterima', 'Tanggal Pembayaran']].dropna()
+            # Preprocessing
+            with st.spinner("Memproses data..."):
+                df1 = df1[['Nomor Unit', 'Nominal']].dropna()
+                df2 = df2[['F', 'Unnamed: 3']].dropna()
+                df3 = df3[['Nomor Unit', 'Tanggal Diterima', 'Tanggal Pembayaran']].dropna()
 
-        df3['Tanggal Diterima'] = pd.to_datetime(df3['Tanggal Diterima'], dayfirst=True)
-        df3['Tanggal Pembayaran'] = pd.to_datetime(df3['Tanggal Pembayaran'], dayfirst=True)
+                df3['Tanggal Diterima'] = pd.to_datetime(df3['Tanggal Diterima'], dayfirst=True)
+                df3['Tanggal Pembayaran'] = pd.to_datetime(df3['Tanggal Pembayaran'], dayfirst=True)
 
-        agg_df = df1.groupby('Nomor Unit').agg({'Nominal': ['count', 'sum']}).reset_index()
-        agg_df.columns = ['Nomor Unit', 'Jumlah Transaksi', 'Total Pembayaran']
+                agg_df = df1.groupby('Nomor Unit').agg({'Nominal': ['count', 'sum']}).reset_index()
+                agg_df.columns = ['Nomor Unit', 'Jumlah Transaksi', 'Total Pembayaran']
 
-        df2 = df2.iloc[2:].rename(columns={'F': 'Nomor Unit', 'Unnamed: 3': 'Harga'})
-        df2['Harga'] = df2['Harga'].astype(float)
+                df2 = df2.iloc[2:].rename(columns={'F': 'Nomor Unit', 'Unnamed: 3': 'Harga'})
+                df2['Harga'] = df2['Harga'].astype(float)
 
-        dataset = pd.merge(agg_df, df2, on='Nomor Unit', how='inner')
-        dataset['Selisih'] = dataset['Harga'] - dataset['Total Pembayaran']
-        dataset['Status Pembayaran'] = dataset['Selisih'].apply(lambda x: 1 if x <= 0 else 0)
+                dataset = pd.merge(agg_df, df2, on='Nomor Unit', how='inner')
+                dataset['Selisih'] = dataset['Harga'] - dataset['Total Pembayaran']
+                dataset['Status Pembayaran'] = dataset['Selisih'].apply(lambda x: 1 if x <= 0 else 0)
 
-        df3['Selisih Hari'] = (df3['Tanggal Diterima'] - df3['Tanggal Pembayaran']).dt.days
-        df4 = df3[df3['Selisih Hari'] > 0]
-        df5 = df4.groupby('Nomor Unit').size().reset_index(name='Jumlah Terlambat')
-        df6 = df3[['Nomor Unit']].drop_duplicates()
-        data_terlambat = pd.merge(df6, df5, on='Nomor Unit', how='left')
+                df3['Selisih Hari'] = (df3['Tanggal Diterima'] - df3['Tanggal Pembayaran']).dt.days
+                df4 = df3[df3['Selisih Hari'] > 0]
+                df5 = df4.groupby('Nomor Unit').size().reset_index(name='Jumlah Terlambat')
+                df6 = df3[['Nomor Unit']].drop_duplicates()
+                data_terlambat = pd.merge(df6, df5, on='Nomor Unit', how='left')
 
-        dataset = pd.merge(dataset, data_terlambat, on='Nomor Unit', how='left')
-        dataset['Jumlah Terlambat'] = dataset['Jumlah Terlambat'].fillna(0).astype(int)
+                dataset = pd.merge(dataset, data_terlambat, on='Nomor Unit', how='left')
+                dataset['Jumlah Terlambat'] = dataset['Jumlah Terlambat'].fillna(0).astype(int)
 
-        # Normalisasi dan Clustering
-        fitur = dataset[['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Status Pembayaran', 'Jumlah Terlambat']]
-        scaler = RobustScaler()
-        dataset_nrmlzd = pd.DataFrame(scaler.fit_transform(fitur), columns=fitur.columns)
+            st.success("✅ Data berhasil diproses!")
+            
+            # Normalisasi dan Clustering
+            with st.spinner("Melakukan klasterisasi..."):
+                fitur = dataset[['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Status Pembayaran', 'Jumlah Terlambat']]
+                scaler = RobustScaler()
+                dataset_nrmlzd = pd.DataFrame(scaler.fit_transform(fitur), columns=fitur.columns)
 
-        fitur_klaster = dataset_nrmlzd[['Jumlah Transaksi', 'Jumlah Terlambat', 'Selisih', 'Status Pembayaran']]
-        fitur_np = fitur_klaster.values
+                fitur_klaster = dataset_nrmlzd[['Jumlah Transaksi', 'Jumlah Terlambat', 'Selisih', 'Status Pembayaran']]
+                fitur_np = fitur_klaster.values
 
-        initial_centers = random_center_initializer(fitur_np, 2).initialize()
-        xmeans_model = xmeans(fitur_np, initial_centers, kmin=2, kmax=5)
-        xmeans_model.process()
-        clusters = xmeans_model.get_clusters()
+                initial_centers = random_center_initializer(fitur_np, 2).initialize()
+                xmeans_model = xmeans(fitur_np, initial_centers, kmin=2, kmax=5)
+                xmeans_model.process()
+                clusters = xmeans_model.get_clusters()
 
-        dataset['Klaster'] = -1
-        for cluster_idx, instance_indices in enumerate(clusters):
-            for instance_idx in instance_indices:
-                if instance_idx < len(dataset):
-                    dataset.loc[instance_idx, 'Klaster'] = cluster_idx
+                dataset['Klaster'] = -1
+                for cluster_idx, instance_indices in enumerate(clusters):
+                    for instance_idx in instance_indices:
+                        if instance_idx < len(dataset):
+                            dataset.loc[instance_idx, 'Klaster'] = cluster_idx
 
-        # Evaluasi
-        st.subheader("📈 Evaluasi Klaster")
-        st.write(f"**Silhouette Score**: {silhouette_score(fitur_np, dataset['Klaster']):.3f}")
-        st.write(f"**Davies-Bouldin Index**: {davies_bouldin_score(fitur_np, dataset['Klaster']):.3f}")
-        st.write(f"**Calinski-Harabasz Score**: {calinski_harabasz_score(fitur_np, dataset['Klaster']):.3f}")
+            # Evaluasi
+            st.subheader("📈 Evaluasi Klaster")
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                st.metric("Silhouette Score", f"{silhouette_score(fitur_np, dataset['Klaster']):.3f}")
+            with col2:
+                st.metric("Davies-Bouldin Index", f"{davies_bouldin_score(fitur_np, dataset['Klaster']):.3f}")
+            with col3:
+                st.metric("Calinski-Harabasz Score", f"{calinski_harabasz_score(fitur_np, dataset['Klaster']):.0f}")
 
-        # Visualisasi t-SNE
-        perplexity = st.slider("Perplexity t-SNE", 5, 50, 30)
-        max_iter = st.slider("Max Iterasi t-SNE", 250, 1000, 300)
+            # Visualisasi t-SNE
+            st.subheader("🔧 Pengaturan Visualisasi")
+            col1, col2 = st.columns(2)
+            with col1:
+                perplexity = st.slider("Perplexity t-SNE", 5, 50, 30)
+            with col2:
+                max_iter = st.slider("Max Iterasi t-SNE", 250, 1000, 300)
 
-        st.subheader("🧬 Visualisasi t-SNE 2D")
-        tsne_2d = TSNE(n_components=2, perplexity=perplexity, n_iter=max_iter, random_state=42)
-        tsne_result = tsne_2d.fit_transform(fitur_np)
-        dataset['TSNE-1'], dataset['TSNE-2'] = tsne_result[:, 0], tsne_result[:, 1]
+            # Visualisasi t-SNE 2D
+            st.subheader("🧬 Visualisasi t-SNE 2D")
+            with st.spinner("Membuat visualisasi 2D..."):
+                tsne_2d = TSNE(n_components=2, perplexity=perplexity, n_iter=max_iter, random_state=42)
+                tsne_result = tsne_2d.fit_transform(fitur_np)
+                dataset['TSNE-1'], dataset['TSNE-2'] = tsne_result[:, 0], tsne_result[:, 1]
 
-        fig, ax = plt.subplots(figsize=(10, 6))
-        sns.scatterplot(data=dataset, x='TSNE-1', y='TSNE-2', hue='Klaster', palette='tab10', s=60)
-        plt.title("Visualisasi Klaster dengan t-SNE 2D")
-        st.pyplot(fig)
+                fig, ax = plt.subplots(figsize=(12, 8))
+                sns.scatterplot(data=dataset, x='TSNE-1', y='TSNE-2', hue='Klaster', palette='tab10', s=60, alpha=0.7)
+                plt.title("Visualisasi Klaster dengan t-SNE 2D", fontsize=16)
+                plt.xlabel("t-SNE Dimensi 1", fontsize=12)
+                plt.ylabel("t-SNE Dimensi 2", fontsize=12)
+                plt.legend(title="Klaster", bbox_to_anchor=(1.05, 1), loc='upper left')
+                plt.tight_layout()
+                st.pyplot(fig)
 
-        # Visualisasi t-SNE 3D
-        st.subheader("Visualisasi t-SNE 3D Interaktif")
-        tsne_3d = TSNE(n_components=3, perplexity=30, n_iter=300, random_state=42)
-        tsne_3d_result = tsne_3d.fit_transform(fitur_np)
-        tsne_3d_df = pd.DataFrame(tsne_3d_result, columns=['TSNE1_3D', 'TSNE2_3D', 'TSNE3_3D'])
-        tsne_3d_df['Klaster'] = dataset['Klaster']
+            # Visualisasi t-SNE 3D
+            st.subheader("🌐 Visualisasi t-SNE 3D Interaktif")
+            with st.spinner("Membuat visualisasi 3D..."):
+                tsne_3d = TSNE(n_components=3, perplexity=30, n_iter=300, random_state=42)
+                tsne_3d_result = tsne_3d.fit_transform(fitur_np)
+                tsne_3d_df = pd.DataFrame(tsne_3d_result, columns=['TSNE1_3D', 'TSNE2_3D', 'TSNE3_3D'])
+                tsne_3d_df['Klaster'] = dataset['Klaster'].astype(str)
 
-        fig_3d = px.scatter_3d(tsne_3d_df, x='TSNE1_3D', y='TSNE2_3D', z='TSNE3_3D', color='Klaster',
-                               color_discrete_sequence=px.colors.qualitative.T10,
-                               title='Visualisasi 3D Klaster dengan t-SNE')
-        st.plotly_chart(fig_3d)
+                fig_3d = px.scatter_3d(tsne_3d_df, x='TSNE1_3D', y='TSNE2_3D', z='TSNE3_3D', 
+                                       color='Klaster',
+                                       color_discrete_sequence=px.colors.qualitative.T10,
+                                       title='Visualisasi 3D Klaster dengan t-SNE',
+                                       labels={'TSNE1_3D': 't-SNE Dimensi 1', 
+                                               'TSNE2_3D': 't-SNE Dimensi 2', 
+                                               'TSNE3_3D': 't-SNE Dimensi 3'})
+                fig_3d.update_layout(height=600)
+                st.plotly_chart(fig_3d, use_container_width=True)
 
-        # Tabel & Export
-        st.subheader("📊 Dataset Final")
-        st.dataframe(dataset)
+            # Analisis Klaster
+            st.subheader("📊 Analisis Klaster")
+            cluster_summary = dataset.groupby('Klaster').agg({
+                'Jumlah Transaksi': ['mean', 'count'],
+                'Total Pembayaran': 'mean',
+                'Harga': 'mean',
+                'Selisih': 'mean',
+                'Status Pembayaran': 'mean',
+                'Jumlah Terlambat': 'mean'
+            }).round(2)
+            
+            st.dataframe(cluster_summary)
 
-        output = io.BytesIO()
-        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            dataset.to_excel(writer, index=False, sheet_name='Hasil_Cluster')
-            writer.save()
-        st.download_button("📥 Download Hasil Excel", output.getvalue(), file_name="hasil_klaster.xlsx")
+            # Tabel Dataset Final
+            st.subheader("📋 Dataset Final")
+            st.dataframe(dataset, use_container_width=True)
+
+            # Export ke Excel
+            st.subheader("📥 Download Hasil")
+            output = io.BytesIO()
+            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                dataset.to_excel(writer, index=False, sheet_name='Hasil_Cluster')
+                cluster_summary.to_excel(writer, sheet_name='Ringkasan_Cluster')
+            
+            processed_data = output.getvalue()
+            st.download_button(
+                label="📥 Download Hasil Excel",
+                data=processed_data,
+                file_name="hasil_klaster.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+
+        except Exception as e:
+            st.error(f"❌ Terjadi kesalahan: {str(e)}")
+            st.info("Pastikan format file Excel sesuai dengan yang diharapkan.")
 
     else:
-        st.warning("⚠️ Silakan upload kedua file terlebih dahulu.")
+        st.warning("⚠️ Silakan upload kedua file terlebih dahulu di halaman **Data** atau di atas.")
+
+# Status bar di bagian bawah
+st.markdown("---")
+st.markdown(f"**Status Halaman Aktif:** {st.session_state.halaman}")
