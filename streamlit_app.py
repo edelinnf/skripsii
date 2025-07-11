@@ -272,7 +272,7 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
             # Visualisasi t-SNE 2D
             st.subheader("🧬 Visualisasi t-SNE 2D")
             with st.spinner("Membuat visualisasi 2D..."):
-                tsne_2d = TSNE(n_components=2, perplexity=perplexity, n_iter=max_iter, random_state=42)
+                tsne_2d = TSNE(n_components=2, perplexity=perplexity, max_iter=max_iter, random_state=42)
                 tsne_result = tsne_2d.fit_transform(fitur_np)
                 dataset['TSNE-1'], dataset['TSNE-2'] = tsne_result[:, 0], tsne_result[:, 1]
 
@@ -288,7 +288,7 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
             # Visualisasi t-SNE 3D
             st.subheader("🌐 Visualisasi t-SNE 3D Interaktif")
             with st.spinner("Membuat visualisasi 3D..."):
-                tsne_2d = TSNE(n_components=2, perplexity=perplexity, n_iter=max_iter, random_state=42)
+                tsne_2d = TSNE(n_components=2, perplexity=perplexity, max_iter=max_iter, random_state=42)
                 tsne_3d_result = tsne_3d.fit_transform(fitur_np)
                 tsne_3d_df = pd.DataFrame(tsne_3d_result, columns=['TSNE1_3D', 'TSNE2_3D', 'TSNE3_3D'])
                 tsne_3d_df['Klaster'] = dataset['Klaster'].astype(str)
