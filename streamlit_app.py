@@ -29,7 +29,7 @@ st.markdown("""
         font-size: 24px;
         font-weight: bold;
         color: #002B5B;
-        margin-bottom: 50px;
+        margin-bottom: 10px;
         text-align: center;
     }
 
@@ -153,7 +153,6 @@ if st.session_state.halaman == "Penjelasan":
 
 # ----------------- Fitur 2: Upload Data ----------------- #
 elif st.session_state.halaman == "Data":
-    st.title("📁 Data")
     st.write("Halaman untuk lihat data.")
     st.header("📂 Unggah Dataset")
     uploaded_angsuran = st.file_uploader("Upload file angsuran.xlsx", type="xlsx", key="angsuran")
@@ -182,7 +181,6 @@ elif st.session_state.halaman == "Data":
 
 # ----------------- Fitur 3: Analisis & Klasterisasi ----------------- #
 elif st.session_state.halaman == "Analisis & Klasterisasi":
-    st.title("📊 Analisis & Klasterisasi")
     st.write("Analisis dan visualisasi klaster pelanggan.")
 
     # Cek apakah file sudah diupload sebelumnya
