@@ -103,11 +103,6 @@ def render_button(label, icon):
         unsafe_allow_html=True
     )
 
-# Menu tombol (ganti sesuai halaman)
-render_button("Penjelasan", "📘")
-render_button("Data", "💾")
-render_button("Analisis & Klasterisasi", "📊")
-
 # Tangani halaman via query param
 query_params = st.query_params
 if "page" in query_params:
