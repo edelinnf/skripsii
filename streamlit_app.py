@@ -8,50 +8,103 @@ from pyclustering.cluster.xmeans import xmeans
 from pyclustering.cluster.center_initializer import random_center_initializer
 from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
 from sklearn.manifold import TSNE
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 import plotly.express as px
+import io
 import warnings
 warnings.filterwarnings('ignore')
 
-# ----------------- Sidebar ----------------- #
-st.sidebar.markdown("## 🧠 Propalyze")
-st.sidebar.markdown("---")
-st.sidebar.title("Menu")
-fitur = st.sidebar.radio("Pilih Halaman", ["\U0001F4D8 Penjelasan", "\U0001F4CA Analisis & Klasterisasi"])
+# ----------------- Custom CSS Styling ----------------- #
+st.markdown("""
+    <style>
+    [data-testid="stSidebar"] {
+        background: linear-gradient(to bottom left, #b8f0d4, #8cc6ff);
+        padding: 2rem 1rem;
+    }
 
-# ----------------- Konten Halaman ----------------- #
-st.markdown('<div class="main-container">', unsafe_allow_html=True)
+    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, 
+    [data-testid="stSidebar"] p {
+        color: #002B5B;
+    }
 
-if fitur == "\U0001F4D8 Penjelasan":
+    .sidebar-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #002B5B;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .stRadio > div {
+        background-color: #a0d2ff;
+        border-radius: 8px;
+        padding: 10px;
+        margin: 5px 0;
+        box-shadow: 0 0 4px rgba(0,0,0,0.1);
+        font-weight: 500;
+    }
+
+    .stRadio > div:hover {
+        background-color: #80bfff;
+        color: white;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# ----------------- Sidebar Layout ----------------- #
+st.sidebar.markdown('<div class="sidebar-title">📊 Propalyze</div>', unsafe_allow_html=True)
+st.sidebar.markdown("### Menu")
+fitur = st.sidebar.radio("",
+    ["📘 Penjelasan", "🗃️ Data", "📊 Analisis & Klasterisasi"]
+)
+
+# ----------------- Header ----------------- #
+st.markdown("<h1 style='text-align: center;'>Property Analysis</h1>", unsafe_allow_html=True)
+
+# ----------------- Fitur 1: Penjelasan ----------------- #
+if fitur == "📘 Penjelasan":
     st.title("Analisis Klasterisasi Pelanggan Properti")
     st.markdown("""
-        Aplikasi ini dibuat menggunakan **Streamlit** untuk melakukan *klasterisasi pelanggan properti* menggunakan algoritma **X-Means**.
+    Aplikasi ini dibuat menggunakan **Streamlit** untuk melakukan *klasterisasi pelanggan properti* 
+    menggunakan algoritma **X-Means**.
 
-        ### \U0001F50D Fitur Utama:
-        - Preprocessing data pelanggan properti
-        - Normalisasi dan identifikasi keterlambatan
-        - Klasterisasi menggunakan X-Means
-        - Visualisasi hasil dengan **t-SNE 2D dan 3D**
-        - Evaluasi model (Silhouette, DBI, CH Score)
-        - Unduh hasil akhir ke Excel
+    ### 🔍 Fitur Utama:
+    - Preprocessing data pelanggan properti
+    - Normalisasi dan identifikasi keterlambatan
+    - Klasterisasi menggunakan X-Means
+    - Visualisasi hasil dengan **t-SNE 2D dan 3D**
+    - Evaluasi model (Silhouette, DBI, CH Score)
+    - Unduh hasil akhir ke Excel
 
-        ### \U0001F4C1 Format Data yang Dibutuhkan:
-        - `angsuran.xlsx` (berisi transaksi)
-        - `data master.xlsx` (berisi harga properti)
+    ### 📁 Format Data yang Dibutuhkan:
+    - `angsuran.xlsx` (berisi transaksi)
+    - `data master.xlsx` (berisi harga properti)
 
-        Silakan masuk ke halaman **Analisis & Klasterisasi** untuk memulai.
+    Silakan masuk ke halaman **Data** untuk mengunggah file Excel, lalu lanjut ke **Analisis & Klasterisasi**.
     """)
 
-elif fitur == "\U0001F4CA Analisis & Klasterisasi":
-    st.title("\U0001F4CA Analisis & Klasterisasi Pelanggan Properti")
+# ----------------- Fitur 2: Upload Data ----------------- #
+elif fitur == "🗃️ Data":
+    st.header("📂 Unggah Dataset")
+    uploaded_angsuran = st.file_uploader("Upload file angsuran.xlsx", type="xlsx", key="angsuran")
+    uploaded_master = st.file_uploader("Upload file data utama.xlsx", type="xlsx", key="data_master")
 
-    uploaded_angsuran = st.file_uploader("\U0001F4E4 Upload file angsuran.xlsx", type="xlsx", key="angsuran")
-    uploaded_master = st.file_uploader("\U0001F4E4 Upload file data utama.xlsx", type="xlsx", key="data_master")
+    if uploaded_angsuran and uploaded_master:
+        st.success("✅ Kedua file berhasil diunggah. Silakan lanjut ke menu 'Analisis & Klasterisasi'.")
+
+# ----------------- Fitur 3: Analisis & Klasterisasi ----------------- #
+elif fitur == "📊 Analisis & Klasterisasi":
+    st.title("📊 Analisis & Klasterisasi Pelanggan Properti")
+
+    uploaded_angsuran = st.file_uploader("Upload file angsuran.xlsx", type="xlsx", key="angsuran2")
+    uploaded_master = st.file_uploader("Upload file data utama.xlsx", type="xlsx", key="data_master2")
 
     if uploaded_angsuran and uploaded_master:
         df1 = pd.read_excel(uploaded_angsuran)
         df2 = pd.read_excel(uploaded_master)
         df3 = pd.read_excel(uploaded_angsuran)
 
+        # Preprocessing
         df1 = df1[['Nomor Unit', 'Nominal']].dropna()
         df2 = df2[['F', 'Unnamed: 3']].dropna()
         df3 = df3[['Nomor Unit', 'Tanggal Diterima', 'Tanggal Pembayaran']].dropna()
@@ -78,6 +131,7 @@ elif fitur == "\U0001F4CA Analisis & Klasterisasi":
         dataset = pd.merge(dataset, data_terlambat, on='Nomor Unit', how='left')
         dataset['Jumlah Terlambat'] = dataset['Jumlah Terlambat'].fillna(0).astype(int)
 
+        # Normalisasi dan Clustering
         fitur = dataset[['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Status Pembayaran', 'Jumlah Terlambat']]
         scaler = RobustScaler()
         dataset_nrmlzd = pd.DataFrame(scaler.fit_transform(fitur), columns=fitur.columns)
@@ -96,15 +150,17 @@ elif fitur == "\U0001F4CA Analisis & Klasterisasi":
                 if instance_idx < len(dataset):
                     dataset.loc[instance_idx, 'Klaster'] = cluster_idx
 
-        st.subheader("\U0001F4C8 Evaluasi Klaster")
+        # Evaluasi
+        st.subheader("📈 Evaluasi Klaster")
         st.write(f"**Silhouette Score**: {silhouette_score(fitur_np, dataset['Klaster']):.3f}")
         st.write(f"**Davies-Bouldin Index**: {davies_bouldin_score(fitur_np, dataset['Klaster']):.3f}")
         st.write(f"**Calinski-Harabasz Score**: {calinski_harabasz_score(fitur_np, dataset['Klaster']):.3f}")
 
+        # Visualisasi t-SNE
         perplexity = st.slider("Perplexity t-SNE", 5, 50, 30)
         max_iter = st.slider("Max Iterasi t-SNE", 250, 1000, 300)
 
-        st.subheader("\U0001F9EC Visualisasi t-SNE 2D")
+        st.subheader("🧬 Visualisasi t-SNE 2D")
         tsne_2d = TSNE(n_components=2, perplexity=perplexity, n_iter=max_iter, random_state=42)
         tsne_result = tsne_2d.fit_transform(fitur_np)
         dataset['TSNE-1'], dataset['TSNE-2'] = tsne_result[:, 0], tsne_result[:, 1]
@@ -114,6 +170,7 @@ elif fitur == "\U0001F4CA Analisis & Klasterisasi":
         plt.title("Visualisasi Klaster dengan t-SNE 2D")
         st.pyplot(fig)
 
+        # Visualisasi t-SNE 3D
         st.subheader("Visualisasi t-SNE 3D Interaktif")
         tsne_3d = TSNE(n_components=3, perplexity=30, n_iter=300, random_state=42)
         tsne_3d_result = tsne_3d.fit_transform(fitur_np)
@@ -125,10 +182,15 @@ elif fitur == "\U0001F4CA Analisis & Klasterisasi":
                                title='Visualisasi 3D Klaster dengan t-SNE')
         st.plotly_chart(fig_3d)
 
-        st.subheader("\U0001F4CA Dataset Final")
+        # Tabel & Export
+        st.subheader("📊 Dataset Final")
         st.dataframe(dataset)
-    else:
-        st.info("\U0001F4C2 Silakan upload kedua file Excel.")
 
-# ----------------- Akhir Konten ----------------- #
-st.markdown('</div>', unsafe_allow_html=True)
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            dataset.to_excel(writer, index=False, sheet_name='Hasil_Cluster')
+            writer.save()
+        st.download_button("📥 Download Hasil Excel", output.getvalue(), file_name="hasil_klaster.xlsx")
+
+    else:
+        st.warning("⚠️ Silakan upload kedua file terlebih dahulu.")
