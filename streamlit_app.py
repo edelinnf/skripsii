@@ -287,22 +287,45 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
 
             # Visualisasi t-SNE 3D
             st.subheader("🌐 Visualisasi t-SNE 3D Interaktif")
-            with st.spinner("Membuat visualisasi 3D..."):
-                tsne_2d = TSNE(n_components=3, perplexity=perplexity, max_iter=max_iter, random_state=42)
-                tsne_3d_result = tsne_3d.fit_transform(fitur_np)
-                tsne_3d_df = pd.DataFrame(tsne_3d_result, columns=['TSNE1_3D', 'TSNE2_3D', 'TSNE3_3D'])
-                tsne_3d_df['Klaster'] = dataset['Klaster'].astype(str)
+            try:
+                with st.spinner("Membuat visualisasi 3D..."):
+                    tsne_3d_model = TSNE(n_components=3, perplexity=30, max_iter=300, random_state=42)
+                    tsne_3d_result = tsne_3d_model.fit_transform(fitur_np)
+                    tsne_3d_df = pd.DataFrame(tsne_3d_result, columns=['TSNE1_3D', 'TSNE2_3D', 'TSNE3_3D'])
+                    tsne_3d_df['Klaster'] = dataset['Klaster'].astype(str)
 
-                fig_3d = px.scatter_3d(tsne_3d_df, x='TSNE1_3D', y='TSNE2_3D', z='TSNE3_3D', 
-                                       color='Klaster',
-                                       color_discrete_sequence=px.colors.qualitative.T10,
-                                       title='Visualisasi 3D Klaster dengan t-SNE',
-                                       labels={'TSNE1_3D': 't-SNE Dimensi 1', 
-                                               'TSNE2_3D': 't-SNE Dimensi 2', 
-                                               'TSNE3_3D': 't-SNE Dimensi 3'})
-                fig_3d.update_layout(height=600)
-                st.plotly_chart(fig_3d, use_container_width=True)
+                    fig_3d = px.scatter_3d(tsne_3d_df, x='TSNE1_3D', y='TSNE2_3D', z='TSNE3_3D', 
+                                           color='Klaster',
+                                           color_discrete_sequence=px.colors.qualitative.T10,
+                                           title='Visualisasi 3D Klaster dengan t-SNE',
+                                           labels={'TSNE1_3D': 't-SNE Dimensi 1', 
+                                                   'TSNE2_3D': 't-SNE Dimensi 2', 
+                                                   'TSNE3_3D': 't-SNE Dimensi 3'})
+                    fig_3d.update_layout(height=600)
+                    st.plotly_chart(fig_3d, use_container_width=True)
+            except Exception as e:
+                st.error(f"Error dalam visualisasi 3D: {str(e)}")
+                st.info("Mencoba dengan parameter yang lebih sederhana...")
+                try:
+                    # Fallback dengan parameter yang lebih sederhana
+                    tsne_3d_simple = TSNE(n_components=3, perplexity=min(30, len(fitur_np)-1), max_iter=250, random_state=42)
+                    tsne_3d_result_simple = tsne_3d_simple.fit_transform(fitur_np)
+                    tsne_3d_df_simple = pd.DataFrame(tsne_3d_result_simple, columns=['TSNE1_3D', 'TSNE2_3D', 'TSNE3_3D'])
+                    tsne_3d_df_simple['Klaster'] = dataset['Klaster'].astype(str)
 
+                    fig_3d_simple = px.scatter_3d(tsne_3d_df_simple, x='TSNE1_3D', y='TSNE2_3D', z='TSNE3_3D', 
+                                                   color='Klaster',
+                                                   color_discrete_sequence=px.colors.qualitative.T10,
+                                                   title='Visualisasi 3D Klaster dengan t-SNE (Simplified)',
+                                                   labels={'TSNE1_3D': 't-SNE Dimensi 1', 
+                                                           'TSNE2_3D': 't-SNE Dimensi 2', 
+                                                           'TSNE3_3D': 't-SNE Dimensi 3'})
+                    fig_3d_simple.update_layout(height=600)
+                    st.plotly_chart(fig_3d_simple, use_container_width=True)
+                except Exception as e2:
+                    st.error(f"Error dalam visualisasi 3D sederhana: {str(e2)}")
+                    st.warning("Visualisasi 3D tidak dapat ditampilkan. Silakan gunakan visualisasi 2D saja.")
+                    
             # Analisis Klaster
             st.subheader("📊 Analisis Klaster")
             cluster_summary = dataset.groupby('Klaster').agg({
