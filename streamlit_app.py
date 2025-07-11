@@ -78,34 +78,35 @@ st.sidebar.markdown(
 )
 
 # ----------------- Sidebar: Branding dan Navigasi ----------------- #
-# Tombol menu sidebar
-def render_button(label, icon):
-    active = "active" if st.session_state.page == label else ""
-    st.sidebar.markdown(
-        f'<div class="sidebar-box {active}" onclick="window.location.href=\'/?page={label}\'">{icon} {label}</div>',
-        unsafe_allow_html=True
-    )
 with st.sidebar:
     st.markdown("# 🧠 Propalyze")
     st.markdown("### Menu")
 
-    if st.button("📘 Penjelasan"):
-        st.session_state.halaman = "Penjelasan"
+    selected = st.session_state.get("halaman", "Penjelasan")
 
-    if st.button("📁 Data"):
-        st.session_state.halaman = "Data"
+    def menu_item(label, icon):
+        active = "active" if st.session_state.get("halaman") == label else ""
+        if st.markdown(
+            f"""
+            <div class="sidebar-box {active}" onclick="window.location.href='?halaman={label}'">
+                {icon} {label}
+            </div>
+            """, unsafe_allow_html=True
+        ):
+            st.session_state.halaman = label
 
-    if st.button("📊 Analisis & Klasterisasi"):
-        st.session_state.halaman = "Analisis"
+    menu_item("Penjelasan", "📘")
+    menu_item("Data", "📁")
+    menu_item("Analisis & Klasterisasi", "📊")
 
 # Inisialisasi halaman aktif
-if "page" not in st.session_state:
-    st.session_state.page = "Penjelasan"
+if "halaman" not in st.session_state:
+    st.session_state.halaman = "Penjelasan"
 
 # Tangani halaman via query param
 query_params = st.query_params
-if "page" in query_params:
-    st.session_state.page = query_params["page"][0]
+if "halaman" in query_params:
+    st.session_state.halaman = query_params["halaman"][0]
 
 # ----------------- Header ----------------- #
 st.markdown("<h1 style='text-align: center;'>Property Analysis</h1>", unsafe_allow_html=True)
