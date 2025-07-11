@@ -92,7 +92,7 @@ st.sidebar.markdown(
         padding: 10px 16px !important;
         font-weight: 600 !important;
         width: 100% !important;
-        text-align: left !important;
+        text-align: center !important;
         margin-bottom: 10px !important;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
     }
