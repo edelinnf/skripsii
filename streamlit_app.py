@@ -130,7 +130,9 @@ if st.session_state.page == "Penjelasan":
     """)
 
 # ----------------- Fitur 2: Upload Data ----------------- #
-elif fitur == "🗃️ Data":
+elif st.session_state.page == "Data":
+    st.title("💾 Data")
+    st.write("Halaman untuk lihat data.")
     st.header("📂 Unggah Dataset")
     uploaded_angsuran = st.file_uploader("Upload file angsuran.xlsx", type="xlsx", key="angsuran")
     uploaded_master = st.file_uploader("Upload file data utama.xlsx", type="xlsx", key="data_master")
@@ -139,8 +141,9 @@ elif fitur == "🗃️ Data":
         st.success("✅ Kedua file berhasil diunggah. Silakan lanjut ke menu 'Analisis & Klasterisasi'.")
 
 # ----------------- Fitur 3: Analisis & Klasterisasi ----------------- #
-elif fitur == "📊 Analisis & Klasterisasi":
-    st.title("📊 Analisis & Klasterisasi Pelanggan Properti")
+elif st.session_state.page == "Analisis & Klasterisasi":
+    st.title("📊 Analisis & Klasterisasi")
+    st.write("Analisis dan visualisasi klaster pelanggan.")
 
     uploaded_angsuran = st.file_uploader("Upload file angsuran.xlsx", type="xlsx", key="angsuran2")
     uploaded_master = st.file_uploader("Upload file data utama.xlsx", type="xlsx", key="data_master2")
