@@ -38,7 +38,7 @@ if fitur == "📘 Penjelasan":
 
     ### 📁 Format Data yang Dibutuhkan:
     - `angsuran.xlsx` (berisi transaksi)
-    - `data utama.xlsx` (berisi harga properti)
+    - `data master.xlsx` (berisi harga properti)
 
     Silakan masuk ke halaman **Analisis & Klasterisasi** untuk memulai.
     """)
@@ -49,11 +49,11 @@ elif fitur == "📊 Analisis & Klasterisasi":
 
     # Upload file
     uploaded_angsuran = st.file_uploader("📤 Upload file angsuran.xlsx", type="xlsx", key="angsuran")
-    uploaded_utama = st.file_uploader("📤 Upload file data utama.xlsx", type="xlsx", key="data_utama")
+    uploaded_master = st.file_uploader("📤 Upload file data utama.xlsx", type="xlsx", key="data_master")
 
-    if uploaded_angsuran and uploaded_utama:
+    if uploaded_angsuran and uploaded_master:
         df1 = pd.read_excel(uploaded_angsuran)
-        df2 = pd.read_excel(uploaded_utama)
+        df2 = pd.read_excel(uploaded_master)
         df3 = pd.read_excel(uploaded_angsuran)
 
         # Proses Data
