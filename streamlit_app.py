@@ -15,22 +15,37 @@ import io
 # ----------------- Custom CSS Styling ----------------- #
 st.markdown("""
     <style>
-    /* Naikkan posisi sidebar logo/nama */
-    .sidebar-title {
-        margin-top: -30px;
-        font-size: 24px;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+    [data-testid="stSidebar"] {
+        background: linear-gradient(to bottom left, #b8f0d4, #8cc6ff);
+        padding: 2rem 1rem;
     }
 
-    /* Geser header konten ke atas */
-    .main-title {
-        margin-top: -40px;
+    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, 
+    [data-testid="stSidebar"] p {
+        color: #002B5B;
+    }
+
+    .sidebar-title {
+        margin-top: -30x;
+        font-size: 24px;
+        font-weight: bold;
+        color: #002B5B;
+        margin-bottom: 10px;
         text-align: center;
-        font-size: 36px;
-        font-weight: 700;
+    }
+
+    .stRadio > div {
+        background-color: #a0d2ff;
+        border-radius: 8px;
+        padding: 10px;
+        margin: 5px 0;
+        box-shadow: 0 0 4px rgba(0,0,0,0.1);
+        font-weight: 500;
+    }
+
+    .stRadio > div:hover {
+        background-color: #80bfff;
+        color: white;
     }
     </style>
 """, unsafe_allow_html=True)
