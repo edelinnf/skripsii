@@ -14,6 +14,54 @@ import io
 import warnings
 warnings.filterwarnings('ignore')
 
+# ----------------- CSS Custom ----------------- #
+st.markdown(
+    """
+    <style>
+    /* Sidebar styling */
+    [data-testid="stSidebar"] > div:first-child {
+        background-color: #8c8c8c; /* abu-abu sidebar */
+        padding: 10px;
+    }
+    
+    /* Header container */
+    .header {
+        background-color: #8c8c8c;
+        padding: 10px;
+        border-bottom: 3px solid black;
+        margin-bottom: 20px;
+    }
+    
+    /* Text styling in header */
+    .header h1 {
+        color: white;
+    }
+
+    /* Content container border */
+    .main-container {
+        background-color: white;
+        padding: 20px;
+        border-left: 3px solid black;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# ----------------- Sidebar ----------------- #
+# Branding & Navigasi di Sidebar
+st.sidebar.markdown("## 🧠 Propalyze")
+st.sidebar.markdown("**Analisis & Klasterisasi Properti**")
+st.sidebar.markdown("---")
+st.sidebar.title("Menu")
+fitur = st.sidebar.radio("Pilih Halaman", ["📘 Penjelasan", "📊 Analisis & Klasterisasi"])
+
+# ----------------- Header ----------------- #
+st.markdown('<div class="header"><h1>Analisis Klasterisasi Pelanggan Properti</h1></div>', unsafe_allow_html=True)
+
+# ----------------- Konten Halaman ----------------- #
+st.markdown('<div class="main-container">', unsafe_allow_html=True)
+
 # ---------------- Sidebar ---------------- #
 # Sidebar - Header Branding
 st.sidebar.markdown("## 🧠 Propalyze")
@@ -138,5 +186,8 @@ elif fitur == "📊 Analisis & Klasterisasi":
         st.subheader("📊 Dataset Final")
         st.dataframe(dataset)
 
+    # ----------------- Akhir Konten ----------------- #
+    st.markdown('</div>', unsafe_allow_html=True)
+   
     else:
         st.info("📂 Silakan upload kedua file Excel.")
