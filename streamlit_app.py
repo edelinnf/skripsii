@@ -50,8 +50,18 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ----------------- Sidebar: Branding dan Navigasi ----------------- #
-st.sidebar.markdown("## 🧠 Propalyze")
-st.sidebar.title("Menu")
+with st.sidebar:
+    st.markdown("# 🧠 Propalyze")
+    st.markdown("### Menu")
+
+    if st.button("📘 Penjelasan"):
+        st.session_state.halaman = "Penjelasan"
+
+    if st.button("📁 Data"):
+        st.session_state.halaman = "Data"
+
+    if st.button("📊 Analisis & Klasterisasi"):
+        st.session_state.halaman = "Analisis"
 
 # CSS untuk style menu kotak
 st.sidebar.markdown(
@@ -107,7 +117,7 @@ if "page" in query_params:
 st.markdown("<h1 style='text-align: center;'>Property Analysis</h1>", unsafe_allow_html=True)
 
 # ----------------- Fitur 1: Penjelasan ----------------- #
-if st.session_state.page == "Penjelasan":
+if st.session_state.halaman == "Penjelasan":
     st.markdown("""
     Aplikasi ini dibuat menggunakan **Streamlit** untuk melakukan *klasterisasi pelanggan properti* 
     menggunakan algoritma **X-Means**.
@@ -128,8 +138,8 @@ if st.session_state.page == "Penjelasan":
     """)
 
 # ----------------- Fitur 2: Upload Data ----------------- #
-elif st.session_state.page == "Data":
-    st.title("💾 Data")
+elif st.session_state.halaman == "Data":
+    st.title("📁 Data")
     st.write("Halaman untuk lihat data.")
     st.header("📂 Unggah Dataset")
     uploaded_angsuran = st.file_uploader("Upload file angsuran.xlsx", type="xlsx", key="angsuran")
@@ -139,8 +149,7 @@ elif st.session_state.page == "Data":
         st.success("✅ Kedua file berhasil diunggah. Silakan lanjut ke menu 'Analisis & Klasterisasi'.")
 
 # ----------------- Fitur 3: Analisis & Klasterisasi ----------------- #
-elif st.session_state.page == "Analisis & Klasterisasi":
-    st.title("📊 Analisis & Klasterisasi")
+elif st.session_state.halaman == "Analisis":
     st.write("Analisis dan visualisasi klaster pelanggan.")
 
     uploaded_angsuran = st.file_uploader("Upload file angsuran.xlsx", type="xlsx", key="angsuran2")
