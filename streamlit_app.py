@@ -50,8 +50,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ----------------- Sidebar: Branding dan Navigasi ----------------- #
-st.sidebar.title("Menu")
 st.sidebar.markdown("## 🧠 Propalyze")
+st.sidebar.title("Menu")
 
 # CSS untuk style menu kotak
 st.sidebar.markdown(
