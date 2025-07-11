@@ -49,28 +49,59 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# CSS untuk style menu kotak
+# CSS untuk style menu kotak (untuk tombol Streamlit)
 st.sidebar.markdown(
     """
     <style>
-    .sidebar-box {
-        background-color: #a3d8f4;
-        padding: 10px 16px;
-        margin-bottom: 10px;
-        border-radius: 12px;
-        color: #002b5c;
-        font-weight: 600;
-        cursor: pointer;
-        text-align: left;
-        border: 2px solid transparent;
+    /* Style untuk tombol di sidebar */
+    .stButton > button {
+        background-color: #a3d8f4 !important;
+        color: #002b5c !important;
+        border: 2px solid transparent !important;
+        border-radius: 12px !important;
+        padding: 10px 16px !important;
+        font-weight: 600 !important;
+        width: 100% !important;
+        text-align: left !important;
+        margin-bottom: 10px !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        transition: all 0.3s ease !important;
     }
-    .sidebar-box:hover {
-        background-color: #74c0fc;
-        border: 2px solid #1c7ed6;
+    
+    .stButton > button:hover {
+        background-color: #74c0fc !important;
+        border: 2px solid #1c7ed6 !important;
+        color: #002b5c !important;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
     }
-    .active {
+    
+    .stButton > button:active,
+    .stButton > button:focus {
         background-color: #1c7ed6 !important;
         color: white !important;
+        border: 2px solid #1c7ed6 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    }
+    
+    /* Khusus untuk sidebar */
+    [data-testid="stSidebar"] .stButton > button {
+        background-color: #a3d8f4 !important;
+        color: #002b5c !important;
+        border: 2px solid transparent !important;
+        border-radius: 12px !important;
+        padding: 10px 16px !important;
+        font-weight: 600 !important;
+        width: 100% !important;
+        text-align: left !important;
+        margin-bottom: 10px !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    }
+    
+    [data-testid="stSidebar"] .stButton > button:hover {
+        background-color: #74c0fc !important;
+        border: 2px solid #1c7ed6 !important;
+        color: #002b5c !important;
+        transform: translateY(-2px) !important;
     }
     </style>
     """,
