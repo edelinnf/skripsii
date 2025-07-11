@@ -123,6 +123,18 @@ elif fitur == "📊 Analisis & Klasterisasi":
         plt.title("Visualisasi Klaster dengan t-SNE 2D")
         st.pyplot(fig)
 
+        # Visualisasi 3D Interaktif
+        st.subheader("Visualisasi t-SNE 3D Interaktif")
+        tsne_3d = TSNE(n_components=3, perplexity=30, n_iter=300, random_state=42)
+        tsne_3d_result = tsne_3d.fit_transform(fitur_np)
+        tsne_3d_df = pd.DataFrame(tsne_3d_result, columns=['TSNE1_3D', 'TSNE2_3D', 'TSNE3_3D'])
+        tsne_3d_df['Klaster'] = dataset['Klaster']
+
+        fig_3d = px.scatter_3d(tsne_3d_df, x='TSNE1_3D', y='TSNE2_3D', z='TSNE3_3D', color='Klaster',
+                               color_discrete_sequence=px.colors.qualitative.T10,
+                               title='Visualisasi 3D Klaster dengan t-SNE')
+        st.plotly_chart(fig_3d)
+
         st.subheader("📊 Dataset Final")
         st.dataframe(dataset)
 
