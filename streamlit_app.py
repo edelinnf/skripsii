@@ -138,19 +138,5 @@ elif fitur == "📊 Analisis & Klasterisasi":
         st.subheader("📊 Dataset Final")
         st.dataframe(dataset)
 
-        # Download Button
-        st.subheader("📥 Unduh Hasil Klasterisasi")
-        output = io.BytesIO()
-        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            dataset.to_excel(writer, index=False, sheet_name='Hasil Klaster')
-            writer.save()
-            processed_data = output.getvalue()
-
-        st.download_button(
-            label="📁 Download Excel",
-            data=processed_data,
-            file_name='hasil_klaster.xlsx',
-            mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        )
     else:
         st.info("📂 Silakan upload kedua file Excel.")
