@@ -108,8 +108,6 @@ st.markdown("<h1 style='text-align: center;'>Property Analysis</h1>", unsafe_all
 
 # ----------------- Fitur 1: Penjelasan ----------------- #
 if st.session_state.page == "Penjelasan":
-    st.title("📘 Penjelasan")
-    st.write("Ini adalah penjelasan aplikasi.")
     st.markdown("""
     Aplikasi ini dibuat menggunakan **Streamlit** untuk melakukan *klasterisasi pelanggan properti* 
     menggunakan algoritma **X-Means**.
