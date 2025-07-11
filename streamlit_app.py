@@ -12,36 +12,8 @@ import plotly.express as px
 import warnings
 warnings.filterwarnings('ignore')
 
-# ----------------- CSS Custom ----------------- #
-st.markdown(
-    """
-    <style>
-    [data-testid="stSidebar"] > div:first-child {
-        background-color: #8c8c8c;
-        padding: 10px;
-    }
-    .header {
-        background-color: #8c8c8c;
-        padding: 10px;
-        border-bottom: 3px solid black;
-        margin-bottom: 20px;
-    }
-    .header h1 {
-        color: white;
-    }
-    .main-container {
-        background-color: white;
-        padding: 20px;
-        border-left: 3px solid black;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 # ----------------- Sidebar ----------------- #
 st.sidebar.markdown("## 🧠 Propalyze")
-st.sidebar.markdown("**Analisis & Klasterisasi Properti**")
 st.sidebar.markdown("---")
 st.sidebar.title("Menu")
 fitur = st.sidebar.radio("Pilih Halaman", ["\U0001F4D8 Penjelasan", "\U0001F4CA Analisis & Klasterisasi"])
