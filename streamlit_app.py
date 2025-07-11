@@ -49,20 +49,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ----------------- Sidebar: Branding dan Navigasi ----------------- #
-with st.sidebar:
-    st.markdown("# 🧠 Propalyze")
-    st.markdown("### Menu")
-
-    if st.button("📘 Penjelasan"):
-        st.session_state.halaman = "Penjelasan"
-
-    if st.button("📁 Data"):
-        st.session_state.halaman = "Data"
-
-    if st.button("📊 Analisis & Klasterisasi"):
-        st.session_state.halaman = "Analisis"
-
 # CSS untuk style menu kotak
 st.sidebar.markdown(
     """
@@ -90,6 +76,20 @@ st.sidebar.markdown(
     """,
     unsafe_allow_html=True
 )
+
+# ----------------- Sidebar: Branding dan Navigasi ----------------- #
+with st.sidebar:
+    st.markdown("# 🧠 Propalyze")
+    st.markdown("### Menu")
+
+    if st.button("📘 Penjelasan"):
+        st.session_state.halaman = "Penjelasan"
+
+    if st.button("📁 Data"):
+        st.session_state.halaman = "Data"
+
+    if st.button("📊 Analisis & Klasterisasi"):
+        st.session_state.halaman = "Analisis"
 
 # Inisialisasi halaman aktif
 if "page" not in st.session_state:
