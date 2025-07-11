@@ -60,7 +60,7 @@ st.sidebar.markdown(
         border: 2px solid transparent !important;
         border-radius: 12px !important;
         padding: 10px 16px !important;
-        font-weight: 600 !important;
+        font-weight: 400 !important;
         width: 100% !important;
         text-align: left !important;
         margin-bottom: 10px !important;
