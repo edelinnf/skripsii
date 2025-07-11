@@ -46,9 +46,6 @@ st.sidebar.markdown("---")
 st.sidebar.title("Menu")
 fitur = st.sidebar.radio("Pilih Halaman", ["\U0001F4D8 Penjelasan", "\U0001F4CA Analisis & Klasterisasi"])
 
-# ----------------- Header ----------------- #
-st.markdown('<div class="header"><h1>Analisis Klasterisasi Pelanggan Properti</h1></div>', unsafe_allow_html=True)
-
 # ----------------- Konten Halaman ----------------- #
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
