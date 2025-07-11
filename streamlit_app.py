@@ -30,7 +30,6 @@ st.markdown("""
         font-size: 24px;
         font-weight: bold;
         color: #002B5B;
-        margin-bottom: 10px;
         text-align: center;
     }
 
