@@ -77,6 +77,15 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
+# Inisialisasi halaman aktif
+if "halaman" not in st.session_state:
+    st.session_state.halaman = "Penjelasan"
+
+# Tangani halaman via query param
+query_params = st.query_params
+if "halaman" in query_params:
+    st.session_state.halaman = query_params["halaman"][0]
+
 # ----------------- Sidebar: Branding dan Navigasi ----------------- #
 with st.sidebar:
     st.markdown("# 🧠 Propalyze")
@@ -98,15 +107,6 @@ with st.sidebar:
     menu_item("Penjelasan", "📘")
     menu_item("Data", "📁")
     menu_item("Analisis & Klasterisasi", "📊")
-
-# Inisialisasi halaman aktif
-if "halaman" not in st.session_state:
-    st.session_state.halaman = "Penjelasan"
-
-# Tangani halaman via query param
-query_params = st.query_params
-if "halaman" in query_params:
-    st.session_state.halaman = query_params["halaman"][0]
 
 # ----------------- Header ----------------- #
 st.markdown("<h1 style='text-align: center;'>Property Analysis</h1>", unsafe_allow_html=True)
