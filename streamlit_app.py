@@ -8,9 +8,7 @@ from pyclustering.cluster.xmeans import xmeans
 from pyclustering.cluster.center_initializer import random_center_initializer
 from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
 from sklearn.manifold import TSNE
-from statsmodels.stats.outliers_influence import variance_inflation_factor
 import plotly.express as px
-import io
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -18,26 +16,19 @@ warnings.filterwarnings('ignore')
 st.markdown(
     """
     <style>
-    /* Sidebar styling */
     [data-testid="stSidebar"] > div:first-child {
-        background-color: #8c8c8c; /* abu-abu sidebar */
+        background-color: #8c8c8c;
         padding: 10px;
     }
-    
-    /* Header container */
     .header {
         background-color: #8c8c8c;
         padding: 10px;
         border-bottom: 3px solid black;
         margin-bottom: 20px;
     }
-    
-    /* Text styling in header */
     .header h1 {
         color: white;
     }
-
-    /* Content container border */
     .main-container {
         background-color: white;
         padding: 20px;
@@ -49,12 +40,11 @@ st.markdown(
 )
 
 # ----------------- Sidebar ----------------- #
-# Branding & Navigasi di Sidebar
 st.sidebar.markdown("## 🧠 Propalyze")
 st.sidebar.markdown("**Analisis & Klasterisasi Properti**")
 st.sidebar.markdown("---")
 st.sidebar.title("Menu")
-fitur = st.sidebar.radio("Pilih Halaman", ["📘 Penjelasan", "📊 Analisis & Klasterisasi"])
+fitur = st.sidebar.radio("Pilih Halaman", ["\U0001F4D8 Penjelasan", "\U0001F4CA Analisis & Klasterisasi"])
 
 # ----------------- Header ----------------- #
 st.markdown('<div class="header"><h1>Analisis Klasterisasi Pelanggan Properti</h1></div>', unsafe_allow_html=True)
@@ -62,49 +52,37 @@ st.markdown('<div class="header"><h1>Analisis Klasterisasi Pelanggan Properti</h
 # ----------------- Konten Halaman ----------------- #
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
-# ---------------- Sidebar ---------------- #
-# Sidebar - Header Branding
-st.sidebar.markdown("## 🧠 Propalyze")
-st.sidebar.title("Menu")
-
-fitur = st.sidebar.radio("Pilih Halaman", ["📘 Penjelasan", "📊 Analisis & Klasterisasi"])
-
-# ---------------- Fitur 1: Tentang Aplikasi ---------------- #
-if fitur == "📘 Penjelasan":
+if fitur == "\U0001F4D8 Penjelasan":
     st.title("Analisis Klasterisasi Pelanggan Properti")
     st.markdown("""
-    Aplikasi ini dibuat menggunakan **Streamlit** untuk melakukan *klasterisasi pelanggan properti* 
-    menggunakan algoritma **X-Means**.
-    
-    ### 🔍 Fitur Utama:
-    - Preprocessing data pelanggan properti
-    - Normalisasi dan identifikasi keterlambatan
-    - Klasterisasi menggunakan X-Means
-    - Visualisasi hasil dengan **t-SNE 2D dan 3D**
-    - Evaluasi model (Silhouette, DBI, CH Score)
-    - Unduh hasil akhir ke Excel
+        Aplikasi ini dibuat menggunakan **Streamlit** untuk melakukan *klasterisasi pelanggan properti* menggunakan algoritma **X-Means**.
 
-    ### 📁 Format Data yang Dibutuhkan:
-    - `angsuran.xlsx` (berisi transaksi)
-    - `data master.xlsx` (berisi harga properti)
+        ### \U0001F50D Fitur Utama:
+        - Preprocessing data pelanggan properti
+        - Normalisasi dan identifikasi keterlambatan
+        - Klasterisasi menggunakan X-Means
+        - Visualisasi hasil dengan **t-SNE 2D dan 3D**
+        - Evaluasi model (Silhouette, DBI, CH Score)
+        - Unduh hasil akhir ke Excel
 
-    Silakan masuk ke halaman **Analisis & Klasterisasi** untuk memulai.
+        ### \U0001F4C1 Format Data yang Dibutuhkan:
+        - `angsuran.xlsx` (berisi transaksi)
+        - `data master.xlsx` (berisi harga properti)
+
+        Silakan masuk ke halaman **Analisis & Klasterisasi** untuk memulai.
     """)
 
-# ---------------- Fitur 2: Analisis & Klasterisasi ---------------- #
-elif fitur == "📊 Analisis & Klasterisasi":
-    st.title("📊 Analisis & Klasterisasi Pelanggan Properti")
+elif fitur == "\U0001F4CA Analisis & Klasterisasi":
+    st.title("\U0001F4CA Analisis & Klasterisasi Pelanggan Properti")
 
-    # Upload file
-    uploaded_angsuran = st.file_uploader("📤 Upload file angsuran.xlsx", type="xlsx", key="angsuran")
-    uploaded_master = st.file_uploader("📤 Upload file data utama.xlsx", type="xlsx", key="data_master")
+    uploaded_angsuran = st.file_uploader("\U0001F4E4 Upload file angsuran.xlsx", type="xlsx", key="angsuran")
+    uploaded_master = st.file_uploader("\U0001F4E4 Upload file data utama.xlsx", type="xlsx", key="data_master")
 
     if uploaded_angsuran and uploaded_master:
         df1 = pd.read_excel(uploaded_angsuran)
         df2 = pd.read_excel(uploaded_master)
         df3 = pd.read_excel(uploaded_angsuran)
 
-        # Proses Data
         df1 = df1[['Nomor Unit', 'Nominal']].dropna()
         df2 = df2[['F', 'Unnamed: 3']].dropna()
         df3 = df3[['Nomor Unit', 'Tanggal Diterima', 'Tanggal Pembayaran']].dropna()
@@ -131,7 +109,6 @@ elif fitur == "📊 Analisis & Klasterisasi":
         dataset = pd.merge(dataset, data_terlambat, on='Nomor Unit', how='left')
         dataset['Jumlah Terlambat'] = dataset['Jumlah Terlambat'].fillna(0).astype(int)
 
-        # Preprocessing
         fitur = dataset[['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Status Pembayaran', 'Jumlah Terlambat']]
         scaler = RobustScaler()
         dataset_nrmlzd = pd.DataFrame(scaler.fit_transform(fitur), columns=fitur.columns)
@@ -139,7 +116,6 @@ elif fitur == "📊 Analisis & Klasterisasi":
         fitur_klaster = dataset_nrmlzd[['Jumlah Transaksi', 'Jumlah Terlambat', 'Selisih', 'Status Pembayaran']]
         fitur_np = fitur_klaster.values
 
-        # X-Means Clustering
         initial_centers = random_center_initializer(fitur_np, 2).initialize()
         xmeans_model = xmeans(fitur_np, initial_centers, kmin=2, kmax=5)
         xmeans_model.process()
@@ -151,18 +127,16 @@ elif fitur == "📊 Analisis & Klasterisasi":
                 if instance_idx < len(dataset):
                     dataset.loc[instance_idx, 'Klaster'] = cluster_idx
 
-        # Evaluasi
-        st.subheader("📈 Evaluasi Klaster")
+        st.subheader("\U0001F4C8 Evaluasi Klaster")
         st.write(f"**Silhouette Score**: {silhouette_score(fitur_np, dataset['Klaster']):.3f}")
         st.write(f"**Davies-Bouldin Index**: {davies_bouldin_score(fitur_np, dataset['Klaster']):.3f}")
         st.write(f"**Calinski-Harabasz Score**: {calinski_harabasz_score(fitur_np, dataset['Klaster']):.3f}")
 
-        perplexity = st.sidebar.slider("Perplexity t-SNE", 5, 50, 30)
-        max_iter = st.sidebar.slider("Max Iterasi t-SNE", 250, 1000, 300)
-        
-        # t-SNE Visualisasi
-        st.subheader("🧬 Visualisasi t-SNE 2D")
-        tsne_2d = TSNE(n_components=2, perplexity=perplexity, max_iter=max_iter, random_state=42)
+        perplexity = st.slider("Perplexity t-SNE", 5, 50, 30)
+        max_iter = st.slider("Max Iterasi t-SNE", 250, 1000, 300)
+
+        st.subheader("\U0001F9EC Visualisasi t-SNE 2D")
+        tsne_2d = TSNE(n_components=2, perplexity=perplexity, n_iter=max_iter, random_state=42)
         tsne_result = tsne_2d.fit_transform(fitur_np)
         dataset['TSNE-1'], dataset['TSNE-2'] = tsne_result[:, 0], tsne_result[:, 1]
 
@@ -171,7 +145,6 @@ elif fitur == "📊 Analisis & Klasterisasi":
         plt.title("Visualisasi Klaster dengan t-SNE 2D")
         st.pyplot(fig)
 
-        # Visualisasi 3D Interaktif
         st.subheader("Visualisasi t-SNE 3D Interaktif")
         tsne_3d = TSNE(n_components=3, perplexity=30, n_iter=300, random_state=42)
         tsne_3d_result = tsne_3d.fit_transform(fitur_np)
@@ -183,11 +156,10 @@ elif fitur == "📊 Analisis & Klasterisasi":
                                title='Visualisasi 3D Klaster dengan t-SNE')
         st.plotly_chart(fig_3d)
 
-        st.subheader("📊 Dataset Final")
+        st.subheader("\U0001F4CA Dataset Final")
         st.dataframe(dataset)
-
-    # ----------------- Akhir Konten ----------------- #
-    st.markdown('</div>', unsafe_allow_html=True)
-   
     else:
-        st.info("📂 Silakan upload kedua file Excel.")
+        st.info("\U0001F4C2 Silakan upload kedua file Excel.")
+
+# ----------------- Akhir Konten ----------------- #
+st.markdown('</div>', unsafe_allow_html=True)
