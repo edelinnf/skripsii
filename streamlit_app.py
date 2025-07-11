@@ -24,7 +24,7 @@ st.markdown(
         background-color: #8c8c8c;
         padding: 10px;
         border-bottom: 3px solid black;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
     }
     .header h1 {
         color: white;
