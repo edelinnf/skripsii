@@ -107,8 +107,7 @@ if "page" in query_params:
 st.markdown("<h1 style='text-align: center;'>Property Analysis</h1>", unsafe_allow_html=True)
 
 # ----------------- Fitur 1: Penjelasan ----------------- #
-if fitur == "📘 Penjelasan":
-    if st.session_state.page == "Penjelasan":
+if st.session_state.page == "Penjelasan":
     st.title("📘 Penjelasan")
     st.write("Ini adalah penjelasan aplikasi.")
     st.markdown("""
