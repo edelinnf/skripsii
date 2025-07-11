@@ -64,7 +64,7 @@ render_button("Data", "💾")
 render_button("Analisis & Klasterisasi", "📊")
 
 # Tangani halaman via query param
-query_params = st.experimental_get_query_params()
+query_params = st.query_params
 if "page" in query_params:
     st.session_state.page = query_params["page"][0]
 
