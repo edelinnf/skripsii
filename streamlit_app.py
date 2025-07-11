@@ -141,4 +141,4 @@ elif fitur == "📊 Analisis & Klasterisasi":
             mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
     else:
-        st.info("📂 Silakan upload kedua file Excel dari sidebar.")
+        st.info("📂 Silakan upload kedua file Excel.")
