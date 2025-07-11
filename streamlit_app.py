@@ -104,10 +104,6 @@ with st.sidebar:
         ):
             st.session_state.halaman = label
 
-    menu_item("Penjelasan", "📘")
-    menu_item("Data", "📁")
-    menu_item("Analisis & Klasterisasi", "📊")
-
 # ----------------- Header ----------------- #
 st.markdown("<h1 style='text-align: center;'>Property Analysis</h1>", unsafe_allow_html=True)
 
