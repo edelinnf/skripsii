@@ -384,6 +384,66 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
     st.download_button("📥 Download Dataset Hasil", data=dataset.to_csv(index=False).encode(),
                        file_name="hasil_klaster.csv", mime="text/csv")
 
+elif st.session_state.halaman == "📘 Tentang Aplikasi":
+    st.title("📘 Tentang Aplikasi Analisis Klaster Pelanggan Properti")
+
+    st.markdown("""
+    Aplikasi ini dikembangkan untuk membantu perusahaan properti dalam **menganalisis perilaku pembayaran pelanggan**. Dengan menggunakan pendekatan **unsupervised learning**, aplikasi ini melakukan segmentasi berdasarkan data transaksi dan informasi properti menggunakan algoritma **X-Means Clustering**.
+    """)
+
+    st.header("🔍 Tujuan Aplikasi")
+    st.markdown("""
+    - Mengelompokkan pelanggan berdasarkan karakteristik pembayaran.
+    - Mengidentifikasi kelompok pelanggan yang berisiko menunggak.
+    - Memberikan wawasan untuk strategi komunikasi, penagihan, dan pelayanan.
+    """)
+
+    st.header("🧾 Penjelasan Fitur Data")
+    st.table({
+        "Fitur": [
+            "Nomor Unit", "Jumlah Transaksi", "Total Pembayaran", 
+            "Harga", "Selisih", "Status Pembayaran", "Jumlah Terlambat", "Klaster"
+        ],
+        "Deskripsi": [
+            "ID unik unit properti",
+            "Jumlah transaksi pembayaran yang dilakukan",
+            "Total nominal pembayaran yang sudah masuk",
+            "Harga properti dari data master",
+            "Selisih antara harga dan total pembayaran",
+            "1: Lunas, 0: Belum lunas",
+            "Jumlah keterlambatan pembayaran",
+            "Hasil segmentasi pelanggan"
+        ]
+    })
+
+    st.header("🤖 Tentang Algoritma X-Means")
+    st.markdown("""
+    **X-Means** adalah pengembangan dari algoritma K-Means yang mampu menentukan **jumlah klaster optimal** secara otomatis.
+    
+    **Kelebihan X-Means**:
+    - Tidak perlu tentukan jumlah klaster manual.
+    - Lebih adaptif pada struktur data yang kompleks.
+    - Cocok untuk eksplorasi data pelanggan yang belum diketahui polanya.
+    """)
+
+    st.header("📈 Penilaian Hasil Klasterisasi: Silhouette Score")
+    st.markdown("""
+    **Silhouette Score** adalah metrik evaluasi untuk menilai seberapa baik data terbagi dalam klaster. Nilainya berkisar antara -1 sampai 1.
+
+    | Nilai Score | Interpretasi |
+    |-------------|--------------|
+    | 0.71 - 1.00 | Struktur klaster sangat baik |
+    | 0.51 - 0.70 | Struktur klaster cukup baik |
+    | 0.26 - 0.50 | Struktur klaster lemah |
+    | < 0.25      | Klasterisasi tidak berarti |
+
+    ✅ **Semakin mendekati 1, semakin baik hasil klasterisasinya.**
+    """)
+
+    st.info("Silakan kembali ke halaman **Data** atau **Analisis & Klasterisasi** untuk menjalankan proses analisis.")
+
+
+
 # Status bar di bagian bawah
 st.markdown("---")
 st.markdown(f"**Status Halaman Aktif:** {st.session_state.halaman}")
