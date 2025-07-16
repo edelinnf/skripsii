@@ -285,7 +285,10 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
                     dataset.loc[instance_idx, 'Klaster'] = cluster_idx
 
     st.success(f"✅ Klasterisasi selesai! Jumlah klaster ditemukan: **{len(clusters)}**")
-    st.dataframe(dataset[['Nomor Unit', 'Klaster']].value_counts().reset_index(name='Jumlah'), use_container_width=True)
+    # Tampilkan tabel berisi fitur yang digunakan + Klaster
+    st.subheader("📋 Hasil Klasterisasi")
+    st.dataframe(dataset[['Nomor Unit'] + selected_features + ['Klaster']], use_container_width=True)
+
 
     # ---------- Evaluasi ----------
     st.subheader("📈 Evaluasi Klaster")
