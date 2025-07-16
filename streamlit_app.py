@@ -167,7 +167,7 @@ if st.session_state.halaman == "📘 Tentang Aplikasi":
 
     st.header("🤖 Tentang Algoritma X-Means")
     st.markdown("""
-    **X-Means** adalah pengembangan dari algoritma K-Means yang mampu menentukan **jumlah klaster optimal** secara otomatis.
+    **X-Means** adalah pengembangan dari algoritma K-Means yang mampu menentukan jumlah klaster optimal dengan komputasi yang cepat.
 
     **Kelebihan X-Means**:
     - Tidak perlu tentukan jumlah klaster secara manual.
