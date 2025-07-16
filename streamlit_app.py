@@ -221,183 +221,110 @@ elif st.session_state.halaman == "Data":
     else:
         st.info("ℹ️ Silakan unggah kedua file untuk melihat proses dan dataset final.")
 
-# ----------------- Fitur 3: Analisis & Klasterisasi ----------------- #
 elif st.session_state.halaman == "Analisis & Klasterisasi":
     st.title("📊 Analisis & Klasterisasi Pelanggan")
-    st.write("Unggah dataset akhir (siap analisis), lalu jalankan preprocessing dan klasterisasi menggunakan X-Means.")
+    st.write("Unggah dataset akhir (hasil fitur 'Data'), lakukan klasterisasi X-Means dan interpretasi hasil.")
 
-    # Upload file siap analisis
-    uploaded_dataset = st.file_uploader("📂 Upload dataset final (.xlsx)", type="xlsx", key="dataset_final")
-
-    if uploaded_dataset:
-        try:
+    # Ambil dataset final dari session_state atau upload manual
+    if 'dataset_final' in st.session_state:
+        dataset = st.session_state.dataset_final
+        st.success("✅ Dataset final tersedia dari halaman sebelumnya.")
+    else:
+        uploaded_dataset = st.file_uploader("📂 Upload dataset final (.xlsx)", type="xlsx")
+        if uploaded_dataset:
             dataset = pd.read_excel(uploaded_dataset)
             st.success("✅ Dataset berhasil diunggah.")
+        else:
+            st.warning("⚠️ Dataset belum tersedia. Unggah dari halaman 'Data' atau upload file di atas.")
+            st.stop()
 
-            # ---------- Preprocessing Fitur Klasterisasi ----------
-            st.subheader("🔧 Preprocessing Fitur Klasterisasi")
-            st.markdown("""
-            Dataset dianalisis menggunakan subset fitur berikut:
-            - **Jumlah Transaksi**
-            - **Total Pembayaran**
-            - **Harga**
-            - **Selisih**
-            - **Status Pembayaran**
-            - **Jumlah Terlambat**
-            """)
-            
-            fitur = dataset[['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Status Pembayaran', 'Jumlah Terlambat']]
-            scaler = RobustScaler()
-            dataset_nrmlzd = pd.DataFrame(scaler.fit_transform(fitur), columns=fitur.columns)
+    # ---------- Preprocessing ----------
+    st.subheader("🔧 Preprocessing Fitur Klasterisasi")
+    st.markdown("""
+    Fitur yang digunakan:
+    - **Jumlah Transaksi**
+    - **Total Pembayaran**
+    - **Harga**
+    - **Selisih**
+    - **Status Pembayaran**
+    - **Jumlah Terlambat**
+    """)
 
-            fitur_klaster = dataset_nrmlzd[['Jumlah Transaksi', 'Jumlah Terlambat', 'Selisih', 'Status Pembayaran']]
-            st.success("✅ Fitur berhasil dinormalisasi dan siap untuk klasterisasi.")
+    fitur = dataset[['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Status Pembayaran', 'Jumlah Terlambat']]
+    scaler = RobustScaler()
+    dataset_nrmlzd = pd.DataFrame(scaler.fit_transform(fitur), columns=fitur.columns)
 
-            # ---------- X-Means Clustering ----------
-            st.subheader("📌 Klasterisasi dengan X-Means")
-            st.markdown("""
-            Proses klasterisasi dilakukan menggunakan algoritma **X-Means** yang merupakan ekstensi dari K-Means
-            dengan kemampuan menentukan jumlah klaster optimal secara otomatis.
-            """)
+    fitur_klaster = dataset_nrmlzd[['Jumlah Transaksi', 'Jumlah Terlambat', 'Selisih', 'Status Pembayaran']]
+    fitur_np = fitur_klaster.values
 
-            with st.spinner("⏳ Menjalankan model X-Means..."):
-                fitur_np = fitur_klaster.values
-                initial_centers = random_center_initializer(fitur_np, 2).initialize()
-                xmeans_model = xmeans(fitur_np, initial_centers, kmin=2, kmax=5)
-                xmeans_model.process()
-                clusters = xmeans_model.get_clusters()
+    # ---------- X-Means Clustering ----------
+    st.subheader("📌 Klasterisasi X-Means")
+    st.markdown("""
+    X-Means mencari jumlah klaster optimal secara otomatis berdasarkan k-min dan k-max.
+    """)
+    kmin = st.slider("K-Min", 2, 5, 2)
+    kmax = st.slider("K-Max", 3, 10, 5)
 
-                dataset['Klaster'] = -1
-                for cluster_idx, instance_indices in enumerate(clusters):
-                    for instance_idx in instance_indices:
-                        if instance_idx < len(dataset):
-                            dataset.loc[instance_idx, 'Klaster'] = cluster_idx
+    with st.spinner("⏳ Menjalankan model X-Means..."):
+        initial_centers = random_center_initializer(fitur_np, kmin).initialize()
+        xmeans_model = xmeans(fitur_np, initial_centers, kmin=kmin, kmax=kmax)
+        xmeans_model.process()
+        clusters = xmeans_model.get_clusters()
 
-            st.success(f"✅ Klasterisasi selesai! Jumlah klaster ditemukan: **{len(clusters)}**")
-            st.dataframe(dataset[['Nomor Unit', 'Klaster']].value_counts().reset_index(name='Jumlah'), use_container_width=True)
+        dataset['Klaster'] = -1
+        for cluster_idx, instance_indices in enumerate(clusters):
+            for instance_idx in instance_indices:
+                if instance_idx < len(dataset):
+                    dataset.loc[instance_idx, 'Klaster'] = cluster_idx
 
-            # Simpan hasil
-            st.session_state.dataset_klaster = dataset
+    st.success(f"✅ Klasterisasi selesai! Jumlah klaster ditemukan: **{len(clusters)}**")
+    st.dataframe(dataset[['Nomor Unit', 'Klaster']].value_counts().reset_index(name='Jumlah'), use_container_width=True)
 
-        except Exception as e:
-            st.error(f"❌ Terjadi kesalahan saat memproses file: {str(e)}")
-    else:
-        st.info("ℹ️ Silakan unggah dataset final yang telah diproses dari halaman sebelumnya.")
+    # ---------- Evaluasi ----------
+    st.subheader("📈 Evaluasi Klaster")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Silhouette Score", f"{silhouette_score(fitur_np, dataset['Klaster']):.3f}")
+    with col2:
+        st.metric("Davies-Bouldin Index", f"{davies_bouldin_score(fitur_np, dataset['Klaster']):.3f}")
+    with col3:
+        st.metric("Calinski-Harabasz Score", f"{calinski_harabasz_score(fitur_np, dataset['Klaster']):.0f}")
 
-            # Evaluasi
-            st.subheader("📈 Evaluasi Klaster")
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                st.metric("Silhouette Score", f"{silhouette_score(fitur_np, dataset['Klaster']):.3f}")
-            with col2:
-                st.metric("Davies-Bouldin Index", f"{davies_bouldin_score(fitur_np, dataset['Klaster']):.3f}")
-            with col3:
-                st.metric("Calinski-Harabasz Score", f"{calinski_harabasz_score(fitur_np, dataset['Klaster']):.0f}")
+    # ---------- Visualisasi t-SNE ----------
+    st.subheader("🧬 Visualisasi t-SNE 2D")
+    perplexity = st.slider("Perplexity", 5, 50, 30)
+    tsne_2d = TSNE(n_components=2, perplexity=perplexity, random_state=42)
+    tsne_result = tsne_2d.fit_transform(fitur_np)
+    dataset['TSNE-1'], dataset['TSNE-2'] = tsne_result[:, 0], tsne_result[:, 1]
 
-            # Visualisasi t-SNE
-            st.subheader("🔧 Pengaturan Visualisasi")
-            col1, col2 = st.columns(2)
-            with col1:
-                perplexity = st.slider("Perplexity t-SNE", 5, 50, 30)
-            with col2:
-                max_iter = st.slider("Max Iterasi t-SNE", 250, 1000, 300)
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.scatterplot(data=dataset, x='TSNE-1', y='TSNE-2', hue='Klaster', palette='tab10', s=60)
+    plt.title("Visualisasi Klaster dengan t-SNE 2D")
+    st.pyplot(fig)
 
-            # Visualisasi t-SNE 2D
-            st.subheader("🧬 Visualisasi t-SNE 2D")
-            with st.spinner("Membuat visualisasi 2D..."):
-                tsne_2d = TSNE(n_components=2, perplexity=perplexity, max_iter=max_iter, random_state=42)
-                tsne_result = tsne_2d.fit_transform(fitur_np)
-                dataset['TSNE-1'], dataset['TSNE-2'] = tsne_result[:, 0], tsne_result[:, 1]
+    # ---------- Interpretasi ----------
+    st.subheader("📌 Interpretasi & Analisis Klaster")
+    cluster_summary = dataset.groupby('Klaster').agg({
+        'Jumlah Transaksi': ['mean', 'count'],
+        'Total Pembayaran': 'mean',
+        'Harga': 'mean',
+        'Selisih': 'mean',
+        'Status Pembayaran': 'mean',
+        'Jumlah Terlambat': 'mean'
+    }).round(2)
+    st.dataframe(cluster_summary)
 
-                fig, ax = plt.subplots(figsize=(12, 8))
-                sns.scatterplot(data=dataset, x='TSNE-1', y='TSNE-2', hue='Klaster', palette='tab10', s=60, alpha=0.7)
-                plt.title("Visualisasi Klaster dengan t-SNE 2D", fontsize=16)
-                plt.xlabel("t-SNE Dimensi 1", fontsize=12)
-                plt.ylabel("t-SNE Dimensi 2", fontsize=12)
-                plt.legend(title="Klaster", bbox_to_anchor=(1.05, 1), loc='upper left')
-                plt.tight_layout()
-                st.pyplot(fig)
+    st.markdown("""
+    **Interpretasi Awal:**
+    - Klaster dengan nilai *Status Pembayaran* rata-rata mendekati 1 menunjukkan kelompok yang lunas.
+    - Klaster dengan rata-rata *Selisih* tinggi kemungkinan besar adalah pelanggan dengan tunggakan.
+    - *Jumlah Terlambat* bisa mengindikasikan kedisiplinan dalam pembayaran.
+    """)
 
-            # Visualisasi t-SNE 3D
-            st.subheader("🌐 Visualisasi t-SNE 3D Interaktif")
-            try:
-                with st.spinner("Membuat visualisasi 3D..."):
-                    tsne_3d_model = TSNE(n_components=3, perplexity=30, max_iter=300, random_state=42)
-                    tsne_3d_result = tsne_3d_model.fit_transform(fitur_np)
-                    tsne_3d_df = pd.DataFrame(tsne_3d_result, columns=['TSNE1_3D', 'TSNE2_3D', 'TSNE3_3D'])
-                    tsne_3d_df['Klaster'] = dataset['Klaster'].astype(str)
-
-                    fig_3d = px.scatter_3d(tsne_3d_df, x='TSNE1_3D', y='TSNE2_3D', z='TSNE3_3D', 
-                                           color='Klaster',
-                                           color_discrete_sequence=px.colors.qualitative.T10,
-                                           title='Visualisasi 3D Klaster dengan t-SNE',
-                                           labels={'TSNE1_3D': 't-SNE Dimensi 1', 
-                                                   'TSNE2_3D': 't-SNE Dimensi 2', 
-                                                   'TSNE3_3D': 't-SNE Dimensi 3'})
-                    fig_3d.update_layout(height=600)
-                    st.plotly_chart(fig_3d, use_container_width=True)
-            except Exception as e:
-                st.error(f"Error dalam visualisasi 3D: {str(e)}")
-                st.info("Mencoba dengan parameter yang lebih sederhana...")
-                try:
-                    # Fallback dengan parameter yang lebih sederhana
-                    tsne_3d_simple = TSNE(n_components=3, perplexity=min(30, len(fitur_np)-1), max_iter=250, random_state=42)
-                    tsne_3d_result_simple = tsne_3d_simple.fit_transform(fitur_np)
-                    tsne_3d_df_simple = pd.DataFrame(tsne_3d_result_simple, columns=['TSNE1_3D', 'TSNE2_3D', 'TSNE3_3D'])
-                    tsne_3d_df_simple['Klaster'] = dataset['Klaster'].astype(str)
-
-                    fig_3d_simple = px.scatter_3d(tsne_3d_df_simple, x='TSNE1_3D', y='TSNE2_3D', z='TSNE3_3D', 
-                                                   color='Klaster',
-                                                   color_discrete_sequence=px.colors.qualitative.T10,
-                                                   title='Visualisasi 3D Klaster dengan t-SNE (Simplified)',
-                                                   labels={'TSNE1_3D': 't-SNE Dimensi 1', 
-                                                           'TSNE2_3D': 't-SNE Dimensi 2', 
-                                                           'TSNE3_3D': 't-SNE Dimensi 3'})
-                    fig_3d_simple.update_layout(height=600)
-                    st.plotly_chart(fig_3d_simple, use_container_width=True)
-                except Exception as e2:
-                    st.error(f"Error dalam visualisasi 3D sederhana: {str(e2)}")
-                    st.warning("Visualisasi 3D tidak dapat ditampilkan. Silakan gunakan visualisasi 2D saja.")
-                    
-            # Analisis Klaster
-            st.subheader("📊 Analisis Klaster")
-            cluster_summary = dataset.groupby('Klaster').agg({
-                'Jumlah Transaksi': ['mean', 'count'],
-                'Total Pembayaran': 'mean',
-                'Harga': 'mean',
-                'Selisih': 'mean',
-                'Status Pembayaran': 'mean',
-                'Jumlah Terlambat': 'mean'
-            }).round(2)
-            
-            st.dataframe(cluster_summary)
-
-            # Tabel Dataset Final
-            st.subheader("📋 Dataset Final")
-            st.dataframe(dataset, use_container_width=True)
-
-            # Export ke Excel
-            st.subheader("📥 Download Hasil")
-            output = io.BytesIO()
-            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                dataset.to_excel(writer, index=False, sheet_name='Hasil_Cluster')
-                cluster_summary.to_excel(writer, sheet_name='Ringkasan_Cluster')
-            
-            processed_data = output.getvalue()
-            st.download_button(
-                label="📥 Download Hasil Excel",
-                data=processed_data,
-                file_name="hasil_klaster.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
-
-        except Exception as e:
-            st.error(f"❌ Terjadi kesalahan: {str(e)}")
-            st.info("Pastikan format file Excel sesuai dengan yang diharapkan.")
-
-    else:
-        st.warning("⚠️ Silakan upload kedua file terlebih dahulu di halaman **Data** atau di atas.")
+    # Simpan hasil ke session dan download
+    st.session_state.dataset_klaster = dataset
+    st.download_button("📥 Download Dataset Hasil", data=dataset.to_csv(index=False).encode(),
+                       file_name="hasil_klaster.csv", mime="text/csv")
 
 # Status bar di bagian bawah
 st.markdown("---")
