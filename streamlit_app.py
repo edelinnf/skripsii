@@ -221,9 +221,9 @@ elif st.session_state.halaman == "Data":
     else:
         st.info("ℹ️ Silakan unggah kedua file untuk melihat proses dan dataset final.")
 
+# ----------------- Fitur 3: Analisis & Klasterisasi ----------------- #
 elif st.session_state.halaman == "Analisis & Klasterisasi":
-    st.title("📊 Analisis & Klasterisasi Pelanggan")
-    st.write("Unggah dataset akhir (hasil fitur 'Data'), lakukan klasterisasi X-Means dan interpretasi hasil.")
+    st.write("Unggah dataset (hasil dari fitur 'Data'), lakukan klasterisasi X-Means dan interpretasi hasil.")
 
     # Ambil dataset final dari session_state atau upload manual
     if 'dataset_final' in st.session_state:
