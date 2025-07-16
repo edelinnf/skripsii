@@ -154,9 +154,7 @@ if st.session_state.halaman == "Penjelasan":
 # ----------------- Fitur 2: Upload & Proses Data ----------------- #
 elif st.session_state.halaman == "Data":
     st.title("📁 Data")
-    st.write("Unggah file dan lihat proses pembentukan dataset hingga final.")
-
-    st.header("📂 Unggah Dataset")
+    st.write("Unggah file untuk mendapatkan dataset siap analisis.")
     uploaded_angsuran = st.file_uploader("Upload file angsuran.xlsx", type="xlsx", key="angsuran")
     uploaded_master = st.file_uploader("Upload file data utama.xlsx", type="xlsx", key="data_master")
 
