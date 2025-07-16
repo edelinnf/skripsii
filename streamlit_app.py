@@ -300,7 +300,17 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
     with col3:
         st.metric("Calinski-Harabasz Score", f"{calinski_harabasz_score(fitur_np, dataset['Klaster']):.0f}")
 
-    # ---------- Visualisasi t-SNE ----------
+    # ---------- Visualisasi t-SNE ----------#
+    st.subheader("📊 Visualisasi Status Pembayaran per Klaster")
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.countplot(x='Klaster', hue='Status Pembayaran', data=dataset, ax=ax)
+    ax.set_title('Jumlah Pelanggan Berdasarkan Klaster dan Status Pembayaran')
+    ax.set_xlabel('Klaster')
+    ax.set_ylabel('Jumlah')
+    ax.legend(title='Status Pembayaran', labels=['Belum Lunas', 'Lunas'])
+    st.pyplot(fig)
+
     st.subheader("🧬 Visualisasi t-SNE 2D")
     perplexity = st.slider("Perplexity", 5, 50, 30)
     tsne_2d = TSNE(n_components=2, perplexity=perplexity, random_state=42)
@@ -311,6 +321,28 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
     sns.scatterplot(data=dataset, x='TSNE-1', y='TSNE-2', hue='Klaster', palette='tab10', s=60)
     plt.title("Visualisasi Klaster dengan t-SNE 2D")
     st.pyplot(fig)
+
+    st.subheader("🌐 Visualisasi t-SNE 3D Interaktif")
+
+    try:
+        tsne_3d_model = TSNE(n_components=3, perplexity=30, random_state=42)
+        tsne_3d_result = tsne_3d_model.fit_transform(fitur_np)
+        tsne_3d_df = pd.DataFrame(tsne_3d_result, columns=['TSNE1_3D', 'TSNE2_3D', 'TSNE3_3D'])
+        tsne_3d_df['Klaster'] = dataset['Klaster'].astype(str)
+
+        fig_3d = px.scatter_3d(tsne_3d_df,
+                               x='TSNE1_3D', y='TSNE2_3D', z='TSNE3_3D',
+                               color='Klaster',
+                               color_discrete_sequence=px.colors.qualitative.T10,
+                               title='Visualisasi 3D Klaster dengan t-SNE',
+                               labels={'TSNE1_3D': 't-SNE Dimensi 1',
+                                       'TSNE2_3D': 't-SNE Dimensi 2',
+                                       'TSNE3_3D': 't-SNE Dimensi 3'})
+        fig_3d.update_layout(height=600)
+        st.plotly_chart(fig_3d, use_container_width=True)
+
+    except Exception as e:
+        st.error(f"Gagal menampilkan t-SNE 3D: {str(e)}")
 
     # ---------- Interpretasi ----------
     st.subheader("📌 Interpretasi & Analisis Klaster")
