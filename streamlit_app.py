@@ -223,64 +223,45 @@ elif st.session_state.halaman == "Data":
 
 # ----------------- Fitur 3: Analisis & Klasterisasi ----------------- #
 elif st.session_state.halaman == "Analisis & Klasterisasi":
-    st.write("Analisis dan visualisasi klaster pelanggan.")
+    st.title("📊 Analisis & Klasterisasi Pelanggan")
+    st.write("Unggah dataset akhir (siap analisis), lalu jalankan preprocessing dan klasterisasi menggunakan X-Means.")
 
-    # Cek apakah file sudah diupload sebelumnya
-    if 'uploaded_angsuran' in st.session_state and 'uploaded_master' in st.session_state:
-        uploaded_angsuran = st.session_state.uploaded_angsuran
-        uploaded_master = st.session_state.uploaded_master
-        st.success("✅ Data sudah tersedia dari halaman sebelumnya.")
-    else:
-        st.warning("⚠️ Data belum diupload. Silakan upload file terlebih dahulu.")
-        uploaded_angsuran = st.file_uploader("Upload file angsuran.xlsx", type="xlsx", key="angsuran2")
-        uploaded_master = st.file_uploader("Upload file data utama.xlsx", type="xlsx", key="data_master2")
+    # Upload file siap analisis
+    uploaded_dataset = st.file_uploader("📂 Upload dataset final (.xlsx)", type="xlsx", key="dataset_final")
 
-    if uploaded_angsuran and uploaded_master:
+    if uploaded_dataset:
         try:
-            # Membaca data
-            df1 = pd.read_excel(uploaded_angsuran)
-            df2 = pd.read_excel(uploaded_master)
-            df3 = pd.read_excel(uploaded_angsuran)
+            dataset = pd.read_excel(uploaded_dataset)
+            st.success("✅ Dataset berhasil diunggah.")
 
-            # Preprocessing
-            with st.spinner("Memproses data..."):
-                df1 = df1[['Nomor Unit', 'Nominal']].dropna()
-                df2 = df2[['F', 'Unnamed: 3']].dropna()
-                df3 = df3[['Nomor Unit', 'Tanggal Diterima', 'Tanggal Pembayaran']].dropna()
-
-                df3['Tanggal Diterima'] = pd.to_datetime(df3['Tanggal Diterima'], dayfirst=True)
-                df3['Tanggal Pembayaran'] = pd.to_datetime(df3['Tanggal Pembayaran'], dayfirst=True)
-
-                agg_df = df1.groupby('Nomor Unit').agg({'Nominal': ['count', 'sum']}).reset_index()
-                agg_df.columns = ['Nomor Unit', 'Jumlah Transaksi', 'Total Pembayaran']
-
-                df2 = df2.iloc[2:].rename(columns={'F': 'Nomor Unit', 'Unnamed: 3': 'Harga'})
-                df2['Harga'] = df2['Harga'].astype(float)
-
-                dataset = pd.merge(agg_df, df2, on='Nomor Unit', how='inner')
-                dataset['Selisih'] = dataset['Harga'] - dataset['Total Pembayaran']
-                dataset['Status Pembayaran'] = dataset['Selisih'].apply(lambda x: 1 if x <= 0 else 0)
-
-                df3['Selisih Hari'] = (df3['Tanggal Diterima'] - df3['Tanggal Pembayaran']).dt.days
-                df4 = df3[df3['Selisih Hari'] > 0]
-                df5 = df4.groupby('Nomor Unit').size().reset_index(name='Jumlah Terlambat')
-                df6 = df3[['Nomor Unit']].drop_duplicates()
-                data_terlambat = pd.merge(df6, df5, on='Nomor Unit', how='left')
-
-                dataset = pd.merge(dataset, data_terlambat, on='Nomor Unit', how='left')
-                dataset['Jumlah Terlambat'] = dataset['Jumlah Terlambat'].fillna(0).astype(int)
-
-            st.success("✅ Data berhasil diproses!")
+            # ---------- Preprocessing Fitur Klasterisasi ----------
+            st.subheader("🔧 Preprocessing Fitur Klasterisasi")
+            st.markdown("""
+            Dataset dianalisis menggunakan subset fitur berikut:
+            - **Jumlah Transaksi**
+            - **Total Pembayaran**
+            - **Harga**
+            - **Selisih**
+            - **Status Pembayaran**
+            - **Jumlah Terlambat**
+            """)
             
-            # Normalisasi dan Clustering
-            with st.spinner("Melakukan klasterisasi..."):
-                fitur = dataset[['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Status Pembayaran', 'Jumlah Terlambat']]
-                scaler = RobustScaler()
-                dataset_nrmlzd = pd.DataFrame(scaler.fit_transform(fitur), columns=fitur.columns)
+            fitur = dataset[['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Status Pembayaran', 'Jumlah Terlambat']]
+            scaler = RobustScaler()
+            dataset_nrmlzd = pd.DataFrame(scaler.fit_transform(fitur), columns=fitur.columns)
 
-                fitur_klaster = dataset_nrmlzd[['Jumlah Transaksi', 'Jumlah Terlambat', 'Selisih', 'Status Pembayaran']]
+            fitur_klaster = dataset_nrmlzd[['Jumlah Transaksi', 'Jumlah Terlambat', 'Selisih', 'Status Pembayaran']]
+            st.success("✅ Fitur berhasil dinormalisasi dan siap untuk klasterisasi.")
+
+            # ---------- X-Means Clustering ----------
+            st.subheader("📌 Klasterisasi dengan X-Means")
+            st.markdown("""
+            Proses klasterisasi dilakukan menggunakan algoritma **X-Means** yang merupakan ekstensi dari K-Means
+            dengan kemampuan menentukan jumlah klaster optimal secara otomatis.
+            """)
+
+            with st.spinner("⏳ Menjalankan model X-Means..."):
                 fitur_np = fitur_klaster.values
-
                 initial_centers = random_center_initializer(fitur_np, 2).initialize()
                 xmeans_model = xmeans(fitur_np, initial_centers, kmin=2, kmax=5)
                 xmeans_model.process()
@@ -291,6 +272,17 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
                     for instance_idx in instance_indices:
                         if instance_idx < len(dataset):
                             dataset.loc[instance_idx, 'Klaster'] = cluster_idx
+
+            st.success(f"✅ Klasterisasi selesai! Jumlah klaster ditemukan: **{len(clusters)}**")
+            st.dataframe(dataset[['Nomor Unit', 'Klaster']].value_counts().reset_index(name='Jumlah'), use_container_width=True)
+
+            # Simpan hasil
+            st.session_state.dataset_klaster = dataset
+
+        except Exception as e:
+            st.error(f"❌ Terjadi kesalahan saat memproses file: {str(e)}")
+    else:
+        st.info("ℹ️ Silakan unggah dataset final yang telah diproses dari halaman sebelumnya.")
 
             # Evaluasi
             st.subheader("📈 Evaluasi Klaster")
