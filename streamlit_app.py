@@ -241,15 +241,6 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
     # ---------- Preprocessing ---------- #
     st.subheader("🔧 Preprocessing Fitur Klasterisasi")
 
-    # Tampilkan semua fitur yang tersedia
-    available_features = ['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Status Pembayaran', 'Jumlah Terlambat']
-
-    selected_features = st.multiselect(
-        "Pilih fitur yang ingin digunakan untuk klasterisasi:",
-         options=available_features,
-         default=['Jumlah Transaksi', 'Jumlah Terlambat', 'Selisih', 'Status Pembayaran']  # default awal
-    )
-
     # Validasi
     # --- PILIH FITUR UNTUK KLASTERISASI ---
     st.subheader("🧮 Pilih Fitur untuk Klasterisasi")
