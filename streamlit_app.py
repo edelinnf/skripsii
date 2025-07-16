@@ -175,8 +175,9 @@ if st.session_state.halaman == "📘 Tentang Aplikasi":
     - Cocok untuk eksplorasi data pelanggan yang belum diketahui polanya.
     """)
 
-    st.header("📈 Penilaian Hasil Klasterisasi: Silhouette Score")
-    st.markdown("""
+    st.header("📈 Evaluasi Hasil Klasterisasi: ")
+    st.markdown("### 1️⃣ **Silhouette Score**")
+    st.markdown(""" 
     **Silhouette Score** adalah metrik evaluasi untuk menilai seberapa baik data terbagi dalam klaster. Nilainya berkisar antara -1 sampai 1.
 
     | Nilai Score | Interpretasi                  |
