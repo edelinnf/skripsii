@@ -110,7 +110,7 @@ st.sidebar.markdown(
 
 # Inisialisasi halaman aktif
 if "halaman" not in st.session_state:
-    st.session_state.halaman = "Tentang Aplikasi"
+    st.session_state.halaman = "📘 Tentang Aplikasi"
 
 # ----------------- Sidebar: Branding dan Navigasi ----------------- #
 with st.sidebar:
