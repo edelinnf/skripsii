@@ -239,30 +239,30 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
             st.stop()
 
     # ---------- Preprocessing ---------- #
-st.subheader("🔧 Preprocessing Fitur Klasterisasi")
+    st.subheader("🔧 Preprocessing Fitur Klasterisasi")
 
-# Tampilkan semua fitur yang tersedia
-available_features = ['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Status Pembayaran', 'Jumlah Terlambat']
+    # Tampilkan semua fitur yang tersedia
+    available_features = ['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Status Pembayaran', 'Jumlah Terlambat']
 
-selected_features = st.multiselect(
-    "Pilih fitur yang ingin digunakan untuk klasterisasi:",
-    options=available_features,
-    default=['Jumlah Transaksi', 'Jumlah Terlambat', 'Selisih', 'Status Pembayaran']  # default awal
-)
+    selected_features = st.multiselect(
+        "Pilih fitur yang ingin digunakan untuk klasterisasi:",
+         options=available_features,
+         default=['Jumlah Transaksi', 'Jumlah Terlambat', 'Selisih', 'Status Pembayaran']  # default awal
+    )
 
-# Validasi
-if len(selected_features) < 2:
-    st.warning("⚠️ Pilih minimal 2 fitur untuk dapat melakukan klasterisasi.")
-    st.stop()
+    # Validasi
+    if len(selected_features) < 2:
+        st.warning("⚠️ Pilih minimal 2 fitur untuk dapat melakukan klasterisasi.")
+        st.stop()
 
-# Proses normalisasi hanya fitur terpilih
-st.markdown("✅ Fitur yang dipilih akan dinormalisasi sebelum dilakukan klasterisasi.")
-fitur = dataset[selected_features]
-scaler = RobustScaler()
-dataset_nrmlzd = pd.DataFrame(scaler.fit_transform(fitur), columns=fitur.columns)
+    # Proses normalisasi hanya fitur terpilih
+    st.markdown("✅ Fitur yang dipilih akan dinormalisasi sebelum dilakukan klasterisasi.")
+    fitur = dataset[selected_features]
+    scaler = RobustScaler()
+    dataset_nrmlzd = pd.DataFrame(scaler.fit_transform(fitur), columns=fitur.columns)
 
-# Siapkan array numpy
-fitur_np = dataset_nrmlzd.values
+    # Siapkan array numpy
+    fitur_np = dataset_nrmlzd.values
 
     # ---------- X-Means Clustering ----------
     st.subheader("📌 Klasterisasi X-Means")
