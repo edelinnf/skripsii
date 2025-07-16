@@ -131,7 +131,7 @@ with st.sidebar:
 st.markdown("<h1 style='text-align: center;'>Property Analysis</h1>", unsafe_allow_html=True)
 
 # ----------------- Fitur 1: Tentang Aplikasi ----------------- #
-if elif st.session_state.halaman == "📘 Tentang Aplikasi":
+if st.session_state.halaman == "📘 Tentang Aplikasi":
     st.title("📘 Tentang Aplikasi Property Analysis")
 
     st.markdown("""
