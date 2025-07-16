@@ -241,26 +241,6 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
     # ---------- Preprocessing ---------- #
     st.subheader("🔧 Preprocessing Fitur Klasterisasi")
 
-    st.subheader("📈 Visualisasi Distribusi Fitur Terpilih")
-
-    # Pilih fitur-fitur yang ingin divisualisasikan
-    fitur_distr = ['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Jumlah Terlambat']
-
-    # Buat plot distribusi untuk setiap fitur
-    fig, axes = plt.subplots(2, 3, figsize=(16, 10))
-    axes = axes.flatten()  # agar bisa diakses dengan indeks tunggal
-
-    for i, feature in enumerate(fitur_distr):
-        sns.histplot(dataset_nrmlzd[feature], kde=True, ax=axes[i])
-        axes[i].set_title(f'Distribusi {feature}')
-
-    # Sembunyikan subplot kosong jika jumlah fitur < jumlah grid
-    for j in range(len(fitur_distr), len(axes)):
-        fig.delaxes(axes[j])
-
-    plt.tight_layout()
-    st.pyplot(fig)
-
     # Tampilkan semua fitur yang tersedia
     available_features = ['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Status Pembayaran', 'Jumlah Terlambat']
 
@@ -269,6 +249,26 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
          options=available_features,
          default=['Jumlah Transaksi', 'Jumlah Terlambat', 'Selisih', 'Status Pembayaran']  # default awal
     )
+
+    st.subheader("📈 Visualisasi Distribusi Fitur Terpilih")
+
+    # Pilih fitur-fitur yang ingin divisualisasikan
+    fitur_distr = ['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Jumlah Terlambat']
+
+    # Buat plot distribusi untuk setiap fitur
+    fig, axes = plt.subplots(2, 3, figsize=(16, 10))
+    axes = axes.flatten()
+
+    for i, f in enumerate(fitur_distr):
+        sns.histplot(dataset_nrmlzd[f], kde=True, ax=axes[i])
+        axes[i].set_title(f'Distribusi {f}')
+
+    # Hapus plot kosong jika fitur < slot plot
+    for j in range(len(fitur_distr), len(axes)):
+        fig.delaxes(axes[j])
+
+    plt.tight_layout()
+    st.pyplot(fig)
 
     # Validasi
     if len(selected_features) < 2:
