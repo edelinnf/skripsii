@@ -251,35 +251,46 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
     )
 
     # Validasi
+    # --- PILIH FITUR UNTUK KLASTERISASI ---
+    st.subheader("🧮 Pilih Fitur untuk Klasterisasi")
+    all_features = ['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Status Pembayaran', 'Jumlah Terlambat']
+    selected_features = st.multiselect("Pilih fitur yang akan digunakan untuk klasterisasi:", options=all_features, default=all_features[:4])
+
+    # Validasi pemilihan fitur
     if len(selected_features) < 2:
         st.warning("⚠️ Pilih minimal 2 fitur untuk dapat melakukan klasterisasi.")
         st.stop()
 
-    # Proses normalisasi hanya fitur terpilih
+    # --- NORMALISASI ---
     st.markdown("✅ Fitur yang dipilih akan dinormalisasi sebelum dilakukan klasterisasi.")
     fitur = dataset[selected_features]
     scaler = RobustScaler()
     dataset_nrmlzd = pd.DataFrame(scaler.fit_transform(fitur), columns=fitur.columns)
 
+    # --- VISUALISASI DISTRIBUSI ---
     st.subheader("📈 Visualisasi Distribusi Fitur Terpilih")
+    num_plots = len(selected_features)
+    n_cols = 3
+    n_rows = (num_plots // n_cols) + int(num_plots % n_cols != 0)
 
-    # Buat plot distribusi untuk setiap fitur
-    fig, axes = plt.subplots(2, 3, figsize=(16, 10))
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(6 * n_cols, 4 * n_rows))
     axes = axes.flatten()
 
-    for i, f in enumerate(fitur_distr):
+    for i, f in enumerate(selected_features):
         sns.histplot(dataset_nrmlzd[f], kde=True, ax=axes[i])
         axes[i].set_title(f'Distribusi {f}')
 
-    # Hapus plot kosong jika fitur < slot plot
-    for j in range(len(fitur_distr), len(axes)):
+    # Kosongkan sisa subplot jika ada
+    for j in range(len(selected_features), len(axes)):
         fig.delaxes(axes[j])
 
     plt.tight_layout()
     st.pyplot(fig)
-    
-    # Siapkan array numpy
-    fitur_np = dataset_nrmlzd.values
+
+    # --- SIMPAN UNTUK MODELING ---
+    fitur_klaster = dataset_nrmlzd
+    fitur_np = fitur_klaster.values
+
 
     # ---------- X-Means Clustering ----------
     st.subheader("📌 Klasterisasi X-Means")
