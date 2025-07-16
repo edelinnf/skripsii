@@ -152,9 +152,12 @@ if st.session_state.halaman == "Penjelasan":
     """)
 
 # ----------------- Fitur 2: Upload & Proses Data ----------------- #
+# ----------------- Fitur 2: Upload & Proses Data ----------------- #
 elif st.session_state.halaman == "Data":
     st.title("📁 Data")
-    st.write("Unggah file untuk mendapatkan dataset siap analisis.")
+    st.write("Unggah file dan proses data hingga membentuk dataset final.")
+
+    st.header("📂 Unggah Dataset")
     uploaded_angsuran = st.file_uploader("Upload file angsuran.xlsx", type="xlsx", key="angsuran")
     uploaded_master = st.file_uploader("Upload file data utama.xlsx", type="xlsx", key="data_master")
 
@@ -167,30 +170,23 @@ elif st.session_state.halaman == "Data":
             df2 = pd.read_excel(uploaded_master)
             df3 = pd.read_excel(uploaded_angsuran)
 
-            st.subheader("🔧 Proses Preprocessing")
-            with st.spinner("Memproses data..."):
-                # --- Langkah 1: Ringkasan Transaksi ---
+            with st.spinner("🔄 Memproses data..."):
+                # --- Ringkasan Transaksi ---
                 df1 = df1[['Nomor Unit', 'Nominal']].dropna()
                 agg_df = df1.groupby('Nomor Unit').agg({'Nominal': ['count', 'sum']}).reset_index()
                 agg_df.columns = ['Nomor Unit', 'Jumlah Transaksi', 'Total Pembayaran']
-                st.markdown("✅ **Ringkasan Transaksi**")
-                st.dataframe(agg_df.head())
 
-                # --- Langkah 2: Bersihkan Data Master ---
+                # --- Bersihkan Data Master ---
                 df2 = df2[['F', 'Unnamed: 3']].dropna()
                 df2 = df2.iloc[2:].rename(columns={'F': 'Nomor Unit', 'Unnamed: 3': 'Harga'})
                 df2['Harga'] = df2['Harga'].astype(float)
-                st.markdown("✅ **Harga Properti**")
-                st.dataframe(df2.head())
 
-                # --- Langkah 3: Gabungkan Harga + Transaksi ---
+                # --- Gabungkan Transaksi + Harga ---
                 dataset = pd.merge(agg_df, df2, on='Nomor Unit', how='inner')
                 dataset['Selisih'] = dataset['Harga'] - dataset['Total Pembayaran']
                 dataset['Status Pembayaran'] = dataset['Selisih'].apply(lambda x: 1 if x <= 0 else 0)
-                st.markdown("✅ **Gabungan Transaksi & Harga**")
-                st.dataframe(dataset.head())
 
-                # --- Langkah 4: Hitung Keterlambatan ---
+                # --- Hitung Keterlambatan Pembayaran ---
                 df3 = df3[['Nomor Unit', 'Tanggal Diterima', 'Tanggal Pembayaran']].dropna()
                 df3['Tanggal Diterima'] = pd.to_datetime(df3['Tanggal Diterima'], dayfirst=True)
                 df3['Tanggal Pembayaran'] = pd.to_datetime(df3['Tanggal Pembayaran'], dayfirst=True)
@@ -199,18 +195,12 @@ elif st.session_state.halaman == "Data":
                 df5 = df4.groupby('Nomor Unit').size().reset_index(name='Jumlah Terlambat')
                 df6 = df3[['Nomor Unit']].drop_duplicates()
                 data_terlambat = pd.merge(df6, df5, on='Nomor Unit', how='left')
-                st.markdown("✅ **Data Keterlambatan**")
-                st.dataframe(data_terlambat.head())
 
-                # --- Langkah 5: Gabungkan Keterlambatan ke Dataset ---
+                # --- Gabungkan semua ke dataset final ---
                 dataset = pd.merge(dataset, data_terlambat, on='Nomor Unit', how='left')
                 dataset['Jumlah Terlambat'] = dataset['Jumlah Terlambat'].fillna(0).astype(int)
 
-            st.success("✅ Data berhasil diproses!")
-
-            # --- Tampilkan Dataset Final ---
-            st.subheader("📌 Dataset Final")
-            st.dataframe(dataset)
+            st.success("✅ Dataset final berhasil dibentuk dan siap digunakan!")
 
             # Simpan ke session_state
             st.session_state.dataset_final = dataset
@@ -219,7 +209,7 @@ elif st.session_state.halaman == "Data":
             st.error(f"❌ Terjadi kesalahan saat memproses file: {str(e)}")
 
     else:
-        st.info("ℹ️ Silakan unggah kedua file untuk melihat proses dan dataset final.")
+        st.info("ℹ️ Silakan unggah kedua file terlebih dahulu.")
 
 # ----------------- Fitur 3: Analisis & Klasterisasi ----------------- #
 elif st.session_state.halaman == "Analisis & Klasterisasi":
