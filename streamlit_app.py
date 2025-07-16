@@ -239,9 +239,6 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
             st.stop()
 
     # ---------- Preprocessing ---------- #
-    st.subheader("🔧 Preprocessing Fitur Klasterisasi")
-
-    # Validasi
     # --- PILIH FITUR UNTUK KLASTERISASI ---
     st.subheader("🧮 Pilih Fitur untuk Klasterisasi")
     all_features = ['Jumlah Transaksi', 'Total Pembayaran', 'Harga', 'Selisih', 'Status Pembayaran', 'Jumlah Terlambat']
