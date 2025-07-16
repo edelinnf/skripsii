@@ -167,12 +167,6 @@ elif st.session_state.halaman == "Data":
             df2 = pd.read_excel(uploaded_master)
             df3 = pd.read_excel(uploaded_angsuran)
 
-            st.subheader("📊 Preview Data Angsuran (df1)")
-            st.dataframe(df1.head())
-
-            st.subheader("📊 Preview Data Master (df2)")
-            st.dataframe(df2.head())
-
             st.subheader("🔧 Proses Preprocessing")
             with st.spinner("Memproses data..."):
                 # --- Langkah 1: Ringkasan Transaksi ---
