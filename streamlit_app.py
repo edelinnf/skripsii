@@ -189,6 +189,22 @@ if st.session_state.halaman == "📘 Tentang Aplikasi":
     ✅ **Semakin mendekati 1, semakin baik hasil klasterisasinya.**
     """)
 
+    st.markdown("### 2️⃣ **Davies-Bouldin Index (DBI)**")
+    st.markdown("""
+    Mengukur **rata-rata kemiripan** antara setiap klaster dengan klaster lainnya. Nilai DBI **semakin kecil, semakin baik**.
+
+    - Ideal: **mendekati 0**
+    - Nilai tinggi menunjukkan klaster **kurang terpisah** dan lebih **overlapping**.
+    """)
+
+    st.markdown("### 3️⃣ **Calinski-Harabasz Index (CH Score)**")
+    st.markdown("""
+    Mengukur rasio antara **dispersi antar-klaster** dan **dispersi dalam-klaster**.
+
+    - Nilai **semakin besar**, menunjukkan klaster **terpisah dengan baik dan padat secara internal**.
+    - Tidak memiliki batas maksimum, bergantung pada data.
+    """)
+    
     st.info("Silakan kembali ke halaman **Data** atau **Analisis & Klasterisasi** untuk menjalankan proses analisis.")
 
 # ----------------- Fitur 2: Upload & Proses Data ----------------- #
