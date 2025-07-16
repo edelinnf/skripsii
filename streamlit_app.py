@@ -135,7 +135,8 @@ if st.session_state.halaman == "📘 Tentang Aplikasi":
     st.title("📘 Tentang Aplikasi Property Analysis")
 
     st.markdown("""
-    Aplikasi ini dikembangkan untuk membantu perusahaan properti dalam **menganalisis perilaku pembayaran pelanggan**. Dengan menggunakan pendekatan **unsupervised learning**, aplikasi ini melakukan segmentasi berdasarkan data transaksi dan informasi properti menggunakan algoritma **X-Means Clustering**.
+    Aplikasi ini dikembangkan untuk membantu perusahaan properti dalam **menganalisis perilaku pembayaran pelanggan**. 
+    Dengan menggunakan pendekatan **unsupervised learning**, aplikasi ini melakukan segmentasi berdasarkan data transaksi dan informasi properti menggunakan algoritma **X-Means Clustering**.
     """)
 
     st.header("🔍 Tujuan Aplikasi")
@@ -146,7 +147,7 @@ if st.session_state.halaman == "📘 Tentang Aplikasi":
     """)
 
     st.header("🧾 Penjelasan Fitur Data")
-    st.table({
+    fitur_data = pd.DataFrame({
         "Fitur": [
             "Nomor Unit", "Jumlah Transaksi", "Total Pembayaran", 
             "Harga", "Selisih", "Status Pembayaran", "Jumlah Terlambat", "Klaster"
@@ -162,14 +163,15 @@ if st.session_state.halaman == "📘 Tentang Aplikasi":
             "Hasil segmentasi pelanggan"
         ]
     })
+    st.table(fitur_data)
 
     st.header("🤖 Tentang Algoritma X-Means")
     st.markdown("""
     **X-Means** adalah pengembangan dari algoritma K-Means yang mampu menentukan **jumlah klaster optimal** secara otomatis.
-    
+
     **Kelebihan X-Means**:
-    - Tidak perlu tentukan jumlah klaster manual.
-    - Lebih adaptif pada struktur data yang kompleks.
+    - Tidak perlu tentukan jumlah klaster secara manual.
+    - Lebih adaptif terhadap struktur data yang kompleks.
     - Cocok untuk eksplorasi data pelanggan yang belum diketahui polanya.
     """)
 
@@ -177,12 +179,12 @@ if st.session_state.halaman == "📘 Tentang Aplikasi":
     st.markdown("""
     **Silhouette Score** adalah metrik evaluasi untuk menilai seberapa baik data terbagi dalam klaster. Nilainya berkisar antara -1 sampai 1.
 
-    | Nilai Score | Interpretasi |
-    |-------------|--------------|
-    | 0.71 - 1.00 | Struktur klaster sangat baik |
-    | 0.51 - 0.70 | Struktur klaster cukup baik |
-    | 0.26 - 0.50 | Struktur klaster lemah |
-    | < 0.25      | Klasterisasi tidak berarti |
+    | Nilai Score | Interpretasi                  |
+    |-------------|-------------------------------|
+    | 0.71 - 1.00 | Struktur klaster sangat baik  |
+    | 0.51 - 0.70 | Struktur klaster cukup baik   |
+    | 0.26 - 0.50 | Struktur klaster lemah        |
+    | < 0.25      | Klasterisasi tidak berarti    |
 
     ✅ **Semakin mendekati 1, semakin baik hasil klasterisasinya.**
     """)
