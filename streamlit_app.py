@@ -136,7 +136,7 @@ if st.session_state.halaman == "📘 Tentang Aplikasi":
 
     st.markdown("""
     Aplikasi ini dikembangkan untuk membantu perusahaan properti dalam **menganalisis perilaku pembayaran pelanggan**. 
-    Dengan menggunakan pendekatan **unsupervised learning**, aplikasi ini melakukan segmentasi berdasarkan data transaksi dan informasi properti menggunakan algoritma **X-Means Clustering**.
+    Dengan menggunakan pendekatan **machine learning**, aplikasi ini melakukan segmentasi berdasarkan data transaksi dan informasi properti menggunakan algoritma **X-Means Clustering**.
     """)
 
     st.header("🔍 Tujuan Aplikasi")
