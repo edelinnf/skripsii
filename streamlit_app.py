@@ -141,9 +141,8 @@ if st.session_state.halaman == "📘 Tentang Aplikasi":
 
     st.header("🔍 Tujuan Aplikasi")
     st.markdown("""
-    - Mengelompokkan pelanggan berdasarkan karakteristik pembayaran.
-    - Mengidentifikasi kelompok pelanggan yang berisiko menunggak.
-    - Memberikan wawasan untuk strategi komunikasi, penagihan, dan pelayanan.
+    - Membantu perusahaan secara sistematis mengenali karakteristik pola pembayaran pelanggan.
+    - Membantu untuk membuat strategi komunikasi, penagihan, dan pelayanan secara interaktif.
     """)
 
     st.header("🧾 Penjelasan Fitur Data")
