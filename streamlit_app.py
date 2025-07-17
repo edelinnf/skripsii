@@ -114,7 +114,7 @@ if "halaman" not in st.session_state:
 
 # ----------------- Sidebar: Branding dan Navigasi ----------------- #
 with st.sidebar:
-    st.markdown("# 🧠 Propalysis")
+    st.markdown("# 🏢 Propalysis")
     st.markdown("### Menu")
 
     # Membuat tombol navigasi yang benar-benar berfungsi
