@@ -416,24 +416,6 @@ elif st.session_state.halaman == "Analisis & Klasterisasi":
     except Exception as e:
         st.error(f"Gagal menampilkan t-SNE 3D: {str(e)}")
 
-    # ---------- Interpretasi ----------
-    st.subheader("📌 Interpretasi & Analisis Klaster")
-    cluster_summary = dataset.groupby('Klaster').agg({
-        'Jumlah Transaksi': ['mean', 'count'],
-        'Total Pembayaran': 'mean',
-        'Harga': 'mean',
-        'Selisih': 'mean',
-        'Status Pembayaran': 'mean',
-        'Jumlah Terlambat': 'mean'
-    }).round(2)
-    st.dataframe(cluster_summary)
-
-    st.markdown("""
-    **Interpretasi Awal:**
-    - Klaster dengan nilai *Status Pembayaran* rata-rata mendekati 1 menunjukkan kelompok yang lunas.
-    - Klaster dengan rata-rata *Selisih* tinggi kemungkinan besar adalah pelanggan dengan tunggakan.
-    - *Jumlah Terlambat* bisa mengindikasikan kedisiplinan dalam pembayaran.
-    """)
 
     # Simpan hasil ke session dan download
     st.session_state.dataset_klaster = dataset
